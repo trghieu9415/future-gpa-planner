@@ -1,108 +1,180 @@
-import { useState } from "react";
-import { Plus, Trash2, BookOpenCheck } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Plus, Trash2, BookOpenCheck, FileSpreadsheet, X, Check, ChevronDown } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea } from "./ui/scroll-area";
+import { useCoursesStore } from "@/hooks/useCoursesStore";
+import { Course, GPAModeProps, LetterGrade, letterGradeToPoints, Points } from "@/types";
+import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
+import { cn, getCourseList } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "./ui/command";
 
-interface Course {
-  id: string;
-  name: string;
-  grade: number;
-  credits: number;
-}
-
-interface GPAModeBProps {
-  courses: Course[];
-  setCourses: (courses: Course[]) => void;
-}
-
-const gradeToPoints: { [key: string]: number } = {
-  "A": 4.0,
-  "A-": 3.7,
-  "B+": 3.3,
-  "B": 3.0,
-  "B-": 2.7,
-  "C+": 2.3,
-  "C": 2.0,
-  "C-": 1.7,
-  "D+": 1.3,
-  "D": 1.0,
-  "F": 0.0
+const calculateAcademicStatus = (courses: Course[]) => {
+  if (courses.length === 0) return { currentGPA: null, accumulatedCredits: null };
+  const totalPoints = courses.reduce(
+    (sum, course) => (course.letterGrade === "F" ? sum : sum + course.points * course.credits),
+    0.0
+  );
+  const accumulatedCredits = courses.reduce(
+    (sum, course) => (course.letterGrade === "F" ? sum : sum + course.credits),
+    0.0
+  );
+  const currentGPA = accumulatedCredits > 0 ? totalPoints / accumulatedCredits : 0.0;
+  return {
+    currentGPA,
+    accumulatedCredits,
+  };
 };
 
-export const GPAModeB = ({ courses, setCourses }: GPAModeBProps) => {
-  const [newCourse, setNewCourse] = useState({ name: "", grade: 0, credits: 3 });
+const initializeNewCourse = () => {
+  return {
+    id: uuidv4(),
+    courseId: "000000",
+    name: "",
+    credits: 1,
+    points: 0,
+    letterGrade: "F",
+  } as Course;
+};
 
-  const addCourse = () => {
-    if (newCourse.grade >= 0 && newCourse.credits > 0) {
-      const course: Course = {
-        id: Date.now().toString(),
-        name: newCourse.name || `Course ${courses.length + 1}`,
-        grade: newCourse.grade,
-        credits: newCourse.credits
-      };
-      setCourses([...courses, course]);
-      setNewCourse({ name: "", grade: 0, credits: 3 });
+export const GPAModeB = ({
+  currentGPA,
+  setCurrentGPA,
+  accumulatedCredits,
+  setAccumulatedCredits,
+  requiredCredits,
+  setRequiredCredits,
+}: GPAModeProps) => {
+  const { courses, addCourse, updateCourse, removeCourse, resetCourses } = useCoursesStore();
+  const [newCourse, setNewCourse] = useState<Course>(initializeNewCourse());
+  const [courseList, setCourseList] = useState<{ courseId: string; name: string }[]>([]);
+  const [courseListOpen, setCourseListOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchCourseList = async () => {
+      try {
+        const courses = await getCourseList();
+        setCourseList(courses);
+      } catch (error) {
+        setCourseList([]);
+      }
+    };
+    fetchCourseList();
+  }, []);
+
+  useEffect(() => {
+    const academicStatus = calculateAcademicStatus(courses);
+    setCurrentGPA(academicStatus.currentGPA);
+    setAccumulatedCredits(academicStatus.accumulatedCredits);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courses]);
+
+  const handleAddCourse = () => {
+    if (!newCourse.id || !newCourse.name || newCourse.credits <= 0 || newCourse.letterGrade === "F") {
+      toast.error("Hãy nhập đủ thông tin của học phần.");
+      return;
     }
-  };
-
-  const removeCourse = (id: string) => {
-    setCourses(courses.filter(course => course.id !== id));
-  };
-
-  const updateCourse = (id: string, field: keyof Course, value: string | number) => {
-    setCourses(courses.map(course => 
-      course.id === id ? { ...course, [field]: value } : course
-    ));
-  };
-
-  const calculateGPA = () => {
-    if (courses.length === 0) return 0;
-    const totalPoints = courses.reduce((sum, course) => sum + (course.grade * course.credits), 0);
-    const totalCredits = courses.reduce((sum, course) => sum + course.credits, 0);
-    return totalCredits > 0 ? totalPoints / totalCredits : 0;
-  };
-
-  const setGradeFromLetter = (grade: string) => {
-    setNewCourse({ ...newCourse, grade: gradeToPoints[grade] });
+    addCourse(newCourse);
+    setNewCourse(initializeNewCourse());
   };
 
   return (
     <Card className="bg-gradient-to-br from-card to-secondary/20">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <BookOpenCheck className="h-5 w-5 text-primary" />
-          Course History
+        <CardTitle className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <BookOpenCheck className="h-5 w-5 text-primary" />
+            Danh sách môn học
+          </div>
+          <Button className="flex gap-2 bg-green-600">
+            <FileSpreadsheet className="size-5" />
+            Nhập từ file
+          </Button>
         </CardTitle>
-        <CardDescription>
-          Add your completed courses to calculate your GPA
-        </CardDescription>
+        <CardDescription>Thêm môn học mà bạn đã hoàn thành để tính GPA</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Add Course Form */}
         <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
-          <h3 className="font-semibold">Add New Course</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="course-name">Course Name</Label>
+          <div className="w-full py-2 flex justify-between">
+            <h3 className="font-semibold flex items-center">Thêm môn học mới</h3>
+            <div className="flex items-center gap-2">
+              <Label className="text-sm font-semibold">Số tín chỉ cần</Label>
               <Input
-                id="course-name"
-                placeholder="e.g., Calculus I"
-                value={newCourse.name}
-                onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
+                type="number"
+                min="0"
+                value={requiredCredits}
+                onChange={(e) => setRequiredCredits(e.target.value ? parseInt(e.target.value) : null)}
+                className={cn(
+                  "w-20 text-lg text-center bg-white",
+                  requiredCredits === null && "border-red-500 border-2"
+                )}
               />
             </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="grade-select">Grade</Label>
-              <Select onValueChange={setGradeFromLetter}>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
+            <div className="space-y-2 sm:col-span-6">
+              <Label htmlFor="course-name">Tên môn học</Label>
+              <Popover open={courseListOpen} onOpenChange={setCourseListOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" role="combobox" className="w-full justify-between">
+                    {newCourse.name || "Chọn học phần"}
+                    <span className="ml-2">
+                      <ChevronDown className="size-5" />
+                    </span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="max-w-[19rem] sm:max-w-[15rem] md:max-w-[20rem] lg:max-w-[26rem] xl:max-w-[31rem] w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Tìm học phần..." />
+                    <CommandEmpty>Không tìm thấy.</CommandEmpty>
+                    <CommandGroup>
+                      <ScrollArea className="max-h-60 overflow-auto">
+                        {courseList.map((course) => (
+                          <CommandItem
+                            key={course.courseId}
+                            value={`${course.name} ${course.courseId}`}
+                            onSelect={() => {
+                              setNewCourse({ ...newCourse, name: course.name, courseId: course.courseId });
+                              setCourseListOpen(false);
+                            }}
+                            className="flex items-center"
+                          >
+                            <div className="flex flex-col gap-y-2">
+                              <span className="font-bold">{course.name}</span>
+                              <span className="!text-xs">Mã môn học: {course.courseId}</span>
+                            </div>
+                          </CommandItem>
+                        ))}
+                      </ScrollArea>
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="grade-select">Điểm</Label>
+              <Select
+                value={newCourse.letterGrade}
+                onValueChange={(e) =>
+                  setNewCourse({
+                    ...newCourse,
+                    letterGrade: e as LetterGrade,
+                    points: letterGradeToPoints[e],
+                  })
+                }
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select grade" />
+                  <SelectValue placeholder="Điểm chữ" />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(gradeToPoints).map(([letter, points]) => (
+                  {Object.entries(letterGradeToPoints).map(([letter, points]) => (
                     <SelectItem key={letter} value={letter}>
                       {letter} ({points.toFixed(1)})
                     </SelectItem>
@@ -110,23 +182,22 @@ export const GPAModeB = ({ courses, setCourses }: GPAModeBProps) => {
                 </SelectContent>
               </Select>
             </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="credits">Credits</Label>
+
+            <div className="space-y-2 sm:col-span-1">
+              <Label htmlFor="credits">Số tín chỉ</Label>
               <Input
                 id="credits"
                 type="number"
-                min="1"
-                max="6"
+                disabled={true}
+                className="!cursor-default !text-black"
                 value={newCourse.credits}
-                onChange={(e) => setNewCourse({ ...newCourse, credits: parseInt(e.target.value) || 0 })}
               />
             </div>
-            
-            <div className="flex items-end">
-              <Button onClick={addCourse} className="w-full">
+
+            <div className="flex items-end sm:col-span-3">
+              <Button onClick={() => handleAddCourse()} className="w-full">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Course
+                Thêm môn học
               </Button>
             </div>
           </div>
@@ -135,66 +206,85 @@ export const GPAModeB = ({ courses, setCourses }: GPAModeBProps) => {
         {/* Course List */}
         {courses.length > 0 && (
           <div className="space-y-4">
-            <h3 className="font-semibold">Your Courses ({courses.length})</h3>
-            <div className="space-y-2">
-              {courses.map((course) => (
-                <div key={course.id} className="flex items-center gap-3 p-3 bg-card border rounded-lg">
-                  <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <Input
-                      value={course.name}
-                      onChange={(e) => updateCourse(course.id, "name", e.target.value)}
-                      placeholder="Course name"
-                    />
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium w-16">
-                        {Object.entries(gradeToPoints).find(([_, points]) => points === course.grade)?.[0] || course.grade.toFixed(1)}
-                      </span>
-                      <span className="text-xs text-muted-foreground">({course.grade.toFixed(1)} pts)</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="number"
-                        min="1"
-                        max="6"
-                        value={course.credits}
-                        onChange={(e) => updateCourse(course.id, "credits", parseInt(e.target.value) || 0)}
-                        className="w-20"
-                      />
-                      <span className="text-sm text-muted-foreground">credits</span>
-                    </div>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => removeCourse(course.id)}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Danh sách học phần đã học ({courses.length})</h3>
+              <Button className="bg-transparent border hover:bg-red-500 text-black hover:text-white flex items-center">
+                <X className="size-5" onClick={() => resetCourses()} />
+                Xóa tất cả
+              </Button>
             </div>
-            
-            <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                <div>
-                  <p className="text-sm text-muted-foreground">Total Credits</p>
-                  <p className="text-2xl font-bold text-primary">
-                    {courses.reduce((sum, course) => sum + course.credits, 0)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Current GPA</p>
-                  <p className="text-2xl font-bold text-accent">{calculateGPA().toFixed(2)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Quality Points</p>
-                  <p className="text-2xl font-bold text-academic-green">
-                    {courses.reduce((sum, course) => sum + (course.grade * course.credits), 0).toFixed(1)}
-                  </p>
+            <ScrollArea className="h-72 border rounded-lg p-2">
+              <div className="space-y-2">
+                {courses.map((course) => (
+                  <div key={course.id} className="flex items-center gap-3 p-3 bg-card border rounded-lg">
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-12 gap-3">
+                      <div className="flex justify-center items-center font-mono text-slate-500">{course.courseId}</div>
+                      <Input
+                        className="sm:col-span-6"
+                        value={course.name}
+                        onChange={(e) => updateCourse(course.id, { ...course, name: e.target.value })}
+                        placeholder="Tên môn học"
+                      />
+                      <div className="flex items-center gap-2 sm:col-span-2">
+                        <div className="text-black">
+                          {newCourse.credits} <span className="text-sm">tín chỉ</span>
+                        </div>
+                      </div>
+                      <Select
+                        value={course.letterGrade}
+                        onValueChange={(e) =>
+                          updateCourse(course.id, {
+                            ...course,
+                            letterGrade: e as LetterGrade,
+                            points: letterGradeToPoints[e],
+                          })
+                        }
+                      >
+                        <SelectTrigger className="sm:col-span-2">
+                          <SelectValue placeholder="Điểm chữ" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(letterGradeToPoints).map(([letter, points]) => (
+                            <SelectItem value={letter}>
+                              {letter} ({points.toFixed(1)})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => removeCourse(course.id)}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+
+            {currentGPA !== null && accumulatedCredits !== null && requiredCredits !== null && requiredCredits > 0 && (
+              <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Số tín chỉ còn lại</p>
+                    <p className="text-2xl font-bold text-primary">{requiredCredits - accumulatedCredits}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">GPA hiện tại</p>
+                    <p className="text-2xl font-bold text-accent">{currentGPA.toFixed(2)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Tiến độ</p>
+                    <p className="text-2xl font-bold text-academic-green">
+                      {Math.round((accumulatedCredits / requiredCredits) * 100)}%
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </CardContent>

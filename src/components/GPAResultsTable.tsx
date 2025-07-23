@@ -1,95 +1,85 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Award, Star, Target } from "lucide-react";
-
-interface Course {
-  id: string;
-  name: string;
-  grade: number;
-  credits: number;
-}
+import { TrendingUp, Award, Medal, BadgeCheck } from "lucide-react";
+import { Course, TargetCredits } from "@/types";
+import { useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 interface GPAResultsTableProps {
   currentGPA: number | null;
   accumulatedCredits: number | null;
   requiredCredits: number | null;
-  courses: Course[];
+  mode: "mode-a" | "mode-b";
 }
 
 const gradeTargets = [
-  { tier: "Excellent", minGPA: 3.6, icon: Award, color: "bg-academic-gold text-academic-navy" },
-  { tier: "Good", minGPA: 3.2, icon: Star, color: "bg-accent text-accent-foreground" },
-  { tier: "Fair", minGPA: 2.5, icon: Target, color: "bg-primary text-primary-foreground" }
+  { tier: "Xuất sắc", minGPA: 3.6, icon: Medal, color: "text-yellow-500" },
+  { tier: "Giỏi", minGPA: 3.2, icon: Award, color: "text-emerald-500" },
+  { tier: "Khá", minGPA: 2.5, icon: BadgeCheck, color: "text-blue-500" },
 ];
 
-const calculateRequiredGrades = (currentGPA: number, currentCredits: number, remainingCredits: number, targetGPA: number) => {
-  const currentQualityPoints = currentGPA * currentCredits;
-  const totalCreditsNeeded = currentCredits + remainingCredits;
-  const totalQualityPointsNeeded = targetGPA * totalCreditsNeeded;
-  const remainingQualityPointsNeeded = totalQualityPointsNeeded - currentQualityPoints;
-  const averageGradeNeeded = remainingQualityPointsNeeded / remainingCredits;
+const calculateRequiredGrades = (
+  currentGPA: number,
+  accumulatedCredits: number,
+  requiredCredits: number,
+  targetGPA: number
+): TargetCredits => {
+  const currentQualityPoints = currentGPA * accumulatedCredits;
+  const targetQualityPoints = targetGPA * requiredCredits;
+  const requiredQualityPoints = targetQualityPoints - currentQualityPoints;
+  const remainingCredits = requiredCredits - accumulatedCredits;
 
-  // Calculate distribution of grades
-  const gradeCombinations = [];
-  
-  for (let aGrades = 0; aGrades <= remainingCredits; aGrades++) {
-    for (let bGrades = 0; bGrades <= remainingCredits - aGrades; bGrades++) {
-      for (let cGrades = 0; cGrades <= remainingCredits - aGrades - bGrades; cGrades++) {
-        const dGrades = remainingCredits - aGrades - bGrades - cGrades;
-        const totalQualityPoints = (aGrades * 4.0) + (bGrades * 3.0) + (cGrades * 2.0) + (dGrades * 1.0);
-        
-        if (Math.abs(totalQualityPoints - remainingQualityPointsNeeded) < 0.1) {
-          gradeCombinations.push({ a: aGrades, b: bGrades, c: cGrades, d: dGrades });
+  if (remainingCredits <= 0) {
+    return { a: 0, b: 0, c: 0, d: 0, finalGPA: currentGPA };
+  }
+
+  for (let a = 0; a <= remainingCredits; a++) {
+    for (let b = 0; b <= remainingCredits - a; b++) {
+      for (let c = 0; c <= remainingCredits - a - b; c++) {
+        const d = remainingCredits - a - b - c;
+        const totalQualityPoints = a * 4.0 + b * 3.0 + c * 2.0 + d * 1.0;
+
+        if (totalQualityPoints >= requiredQualityPoints) {
+          const finalGPA = (currentQualityPoints + totalQualityPoints) / requiredCredits;
+          return { a, b, c, d, finalGPA };
         }
       }
     }
   }
 
-  // Return the most balanced combination or a reasonable approximation
-  if (gradeCombinations.length > 0) {
-    return gradeCombinations[0];
-  } else {
-    // Fallback calculation
-    const aCredits = Math.max(0, Math.min(remainingCredits, Math.ceil(averageGradeNeeded > 3.5 ? remainingCredits * 0.6 : remainingCredits * 0.4)));
-    const bCredits = Math.max(0, Math.min(remainingCredits - aCredits, Math.ceil((remainingCredits - aCredits) * 0.5)));
-    const cCredits = Math.max(0, Math.min(remainingCredits - aCredits - bCredits, Math.ceil((remainingCredits - aCredits - bCredits) * 0.7)));
-    const dCredits = Math.max(0, remainingCredits - aCredits - bCredits - cCredits);
-    
-    return { a: aCredits, b: bCredits, c: cCredits, d: dCredits };
-  }
+  return {
+    a: remainingCredits,
+    b: 0,
+    c: 0,
+    d: 0,
+    finalGPA: (currentGPA * accumulatedCredits + remainingCredits * 4.0) / requiredCredits,
+  };
 };
 
-export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredits, courses }: GPAResultsTableProps) => {
-  // Calculate current state from either mode
-  let effectiveGPA = currentGPA;
-  let effectiveCredits = accumulatedCredits;
-  
-  if (courses.length > 0) {
-    const totalCredits = courses.reduce((sum, course) => sum + course.credits, 0);
-    const totalQualityPoints = courses.reduce((sum, course) => sum + (course.grade * course.credits), 0);
-    effectiveGPA = totalCredits > 0 ? totalQualityPoints / totalCredits : 0;
-    effectiveCredits = totalCredits;
+export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredits, mode }: GPAResultsTableProps) => {
+  if (mode === "mode-b") {
+    console.warn("GPAResultsTable is not applicable for mode-b. Please implement the logic for mode-b.");
   }
 
-  const effectiveRemainingCredits = requiredCredits && effectiveCredits ? requiredCredits - effectiveCredits : null;
+  const remainingCredits = requiredCredits && accumulatedCredits ? requiredCredits - accumulatedCredits : null;
 
-  if (!effectiveGPA || !effectiveCredits || !requiredCredits || !effectiveRemainingCredits || effectiveRemainingCredits <= 0) {
+  if (!currentGPA || !accumulatedCredits || !requiredCredits || !remainingCredits || remainingCredits <= 0) {
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5 text-primary" />
-            Grade Requirements
+            Yêu cầu về điểm
           </CardTitle>
           <CardDescription>
-            Enter your academic data to see what grades you need for different GPA targets
+            Nhập dữ liệu học tập của bạn để xem cần đạt những điểm số nào cho từng mục tiêu GPA khác nhau.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
             <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Complete the form above to see your grade requirements</p>
+            <p>Điền đầy đủ thông tin bên trên để xem bạn cần đạt những điểm số nào.</p>
           </div>
         </CardContent>
       </Card>
@@ -101,11 +91,11 @@ export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredit
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-primary" />
-          Grade Requirements for Graduation Targets
+          Yêu cầu điểm số để đạt các mục tiêu tốt nghiệp
         </CardTitle>
         <CardDescription>
-          Based on {effectiveCredits} completed credits with {effectiveGPA.toFixed(2)} GPA. 
-          Showing requirements for remaining {effectiveRemainingCredits} credits.
+          Dựa trên {accumulatedCredits} tín chỉ đã hoàn thành với GPA hiện tại là {currentGPA.toFixed(2)}. Hiển thị yêu
+          cầu điểm số cho {remainingCredits} tín chỉ còn lại.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -113,60 +103,78 @@ export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredit
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Target Tier</TableHead>
-                <TableHead>Target GPA</TableHead>
-                <TableHead className="text-center">A Credits</TableHead>
-                <TableHead className="text-center">B Credits</TableHead>
-                <TableHead className="text-center">C Credits</TableHead>
-                <TableHead className="text-center">D Credits</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead rowSpan={2} className="text-center min-w-30">
+                  Xếp loại tốt nghiệp
+                </TableHead>
+                <TableHead rowSpan={2} className="text-center">
+                  GPA mục tiêu
+                </TableHead>
+                <TableHead colSpan={4} className="text-center">
+                  Số tính chỉ
+                </TableHead>
+                <TableHead rowSpan={2} className="text-center">
+                  GPA tốt nghiệp
+                </TableHead>
+                <TableHead rowSpan={2} className="text-center min-w-40">
+                  Trạng thái
+                </TableHead>
+              </TableRow>
+              <TableRow>
+                <TableHead className="text-center">A</TableHead>
+                <TableHead className="text-center">B</TableHead>
+                <TableHead className="text-center">C</TableHead>
+                <TableHead className="text-center">D</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {gradeTargets.map((target) => {
                 const requirements = calculateRequiredGrades(
-                  effectiveGPA, 
-                  effectiveCredits, 
-                  effectiveRemainingCredits, 
+                  currentGPA,
+                  accumulatedCredits,
+                  requiredCredits,
                   target.minGPA
                 );
-                
-                const isAchievable = effectiveGPA >= target.minGPA || 
-                  (requirements.a + requirements.b + requirements.c + requirements.d) <= effectiveRemainingCredits;
-                
+
+                const isAchieved = currentGPA >= target.minGPA;
+                const isAchievable = requirements.finalGPA >= target.minGPA;
+
                 const IconComponent = target.icon;
-                
+                const styleComponent = target.color;
+
                 return (
                   <TableRow key={target.tier}>
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <IconComponent className="h-4 w-4" />
+                      <div className="flex items-center justify-center gap-2">
+                        <IconComponent className={cn("h-4 w-4", styleComponent)} />
                         <span className="font-medium">{target.tier}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="font-mono">
-                        {target.minGPA.toFixed(1)}+
-                      </Badge>
+                      <div className="flex items-center justify-center">
+                        <Badge variant="outline" className="font-mono ">
+                          {target.minGPA.toFixed(1)}+
+                        </Badge>
+                      </div>
                     </TableCell>
-                    <TableCell className="text-center font-mono">
-                      {requirements.a}
-                    </TableCell>
-                    <TableCell className="text-center font-mono">
-                      {requirements.b}
-                    </TableCell>
-                    <TableCell className="text-center font-mono">
-                      {requirements.c}
-                    </TableCell>
-                    <TableCell className="text-center font-mono">
-                      {requirements.d}
-                    </TableCell>
+                    <TableCell className="text-center font-mono">{requirements.a}</TableCell>
+                    <TableCell className="text-center font-mono">{requirements.b}</TableCell>
+                    <TableCell className="text-center font-mono">{requirements.c}</TableCell>
+                    <TableCell className="text-center font-mono">{requirements.d}</TableCell>
+                    <TableCell className="text-center font-mono">{requirements.finalGPA.toFixed(2)}</TableCell>
                     <TableCell>
-                      <Badge 
-                        className={isAchievable ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"}
-                      >
-                        {effectiveGPA >= target.minGPA ? "Already Achieved" : isAchievable ? "Achievable" : "Challenging"}
-                      </Badge>
+                      <div className="flex items-center justify-center">
+                        <Badge
+                          className={
+                            isAchieved
+                              ? "bg-accent text-accent-foreground"
+                              : isAchievable
+                                ? "bg-yellow-400 text-black"
+                                : "bg-muted text-muted-foreground"
+                          }
+                        >
+                          {isAchieved ? "Cần duy trì" : isAchievable ? "Có thể đạt" : "Cần học cải thiện"}
+                        </Badge>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
@@ -174,17 +182,26 @@ export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredit
             </TableBody>
           </Table>
         </div>
-        
+
         <div className="mt-6 p-4 bg-muted/50 rounded-lg">
           <p className="text-sm text-muted-foreground mb-2">
-            <strong>Note:</strong> These calculations assume you complete exactly {effectiveRemainingCredits} more credits. 
-            Grade combinations show one possible path to reach each target GPA.
+            <strong>Lưu ý:</strong>
+            <br />- Các phép tính này giả định rằng bạn sẽ hoàn thành chính xác {remainingCredits} tín chỉ còn lại.
+            <br />- Các tổ hợp điểm chỉ là một trong nhiều cách có thể để đạt được từng mức GPA mục tiêu.
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-            <div><strong>A:</strong> 4.0 points</div>
-            <div><strong>B:</strong> 3.0 points</div>
-            <div><strong>C:</strong> 2.0 points</div>
-            <div><strong>D:</strong> 1.0 points</div>
+            <div>
+              <strong>A:</strong> 4.0
+            </div>
+            <div>
+              <strong>B:</strong> 3.0
+            </div>
+            <div>
+              <strong>C:</strong> 2.0
+            </div>
+            <div>
+              <strong>D:</strong> 1.0
+            </div>
           </div>
         </div>
       </CardContent>

@@ -2,39 +2,29 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen } from "lucide-react";
+import { GPAModeProps } from "@/types";
 
-interface GPAModeAProps {
-  currentGPA: number | null;
-  setCurrentGPA: (value: number | null) => void;
-  accumulatedCredits: number | null;
-  setAccumulatedCredits: (value: number | null) => void;
-  requiredCredits: number | null;
-  setRequiredCredits: (value: number | null) => void;
-}
-
-export const GPAModeA = ({ 
-  currentGPA, 
-  setCurrentGPA, 
-  accumulatedCredits, 
-  setAccumulatedCredits, 
-  requiredCredits, 
-  setRequiredCredits 
-}: GPAModeAProps) => {
+export const GPAModeA = ({
+  currentGPA,
+  setCurrentGPA,
+  accumulatedCredits,
+  setAccumulatedCredits,
+  requiredCredits,
+  setRequiredCredits,
+}: GPAModeProps) => {
   return (
     <Card className="bg-gradient-to-br from-card to-secondary/20">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <BookOpen className="h-5 w-5 text-primary" />
-          Current Academic Status
+          Tình trạng học tập hiện tại
         </CardTitle>
-        <CardDescription>
-          Enter your current GPA and credit information
-        </CardDescription>
+        <CardDescription>Nhập GPA hiện tại và thông tin về số tín chỉ</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-2">
-            <Label htmlFor="current-gpa">Current GPA</Label>
+            <Label htmlFor="current-gpa">GPA hiện tại</Label>
             <Input
               id="current-gpa"
               type="number"
@@ -46,51 +36,51 @@ export const GPAModeA = ({
               onChange={(e) => setCurrentGPA(e.target.value ? parseFloat(e.target.value) : null)}
               className="text-lg"
             />
-            <p className="text-sm text-muted-foreground">Scale: 0.0 - 4.0</p>
+            <p className="text-sm text-muted-foreground">Phạm vi: 0.0 - 4.0</p>
           </div>
-          
+
           <div className="space-y-2">
-            <Label htmlFor="accumulated-credits">Accumulated Credits</Label>
+            <Label htmlFor="accumulated-credits">Số tín chỉ tích lũy</Label>
             <Input
               id="accumulated-credits"
               type="number"
-              placeholder="90"
+              placeholder="98"
               min="0"
               value={accumulatedCredits || ""}
               onChange={(e) => setAccumulatedCredits(e.target.value ? parseInt(e.target.value) : null)}
               className="text-lg"
             />
-            <p className="text-sm text-muted-foreground">Credits completed</p>
+            <p className="text-sm text-muted-foreground">Số tính chỉ đã hoàn thành</p>
           </div>
-          
+
           <div className="space-y-2">
-            <Label htmlFor="required-credits">Required Credits</Label>
+            <Label htmlFor="required-credits">Số tính chỉ yêu cầu</Label>
             <Input
               id="required-credits"
               type="number"
-              placeholder="130"
+              placeholder="132"
               min="0"
               value={requiredCredits || ""}
               onChange={(e) => setRequiredCredits(e.target.value ? parseInt(e.target.value) : null)}
               className="text-lg"
             />
-            <p className="text-sm text-muted-foreground">Total for graduation</p>
+            <p className="text-sm text-muted-foreground">Số tín chỉ tối thiểu để tốt nghiệp</p>
           </div>
         </div>
-        
+
         {currentGPA && accumulatedCredits && requiredCredits && (
           <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
               <div>
-                <p className="text-sm text-muted-foreground">Remaining Credits</p>
+                <p className="text-sm text-muted-foreground">Số tín chỉ còn lại</p>
                 <p className="text-2xl font-bold text-primary">{requiredCredits - accumulatedCredits}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Current GPA</p>
+                <p className="text-sm text-muted-foreground">GPA hiện tại</p>
                 <p className="text-2xl font-bold text-accent">{currentGPA.toFixed(2)}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Progress</p>
+                <p className="text-sm text-muted-foreground">Tiến độ</p>
                 <p className="text-2xl font-bold text-academic-green">
                   {Math.round((accumulatedCredits / requiredCredits) * 100)}%
                 </p>
