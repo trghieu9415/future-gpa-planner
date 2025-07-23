@@ -3,7 +3,6 @@ import { GPAModeB } from "@/components/GPAModeB";
 import { GPAResultsTable } from "@/components/GPAResultsTable";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Course } from "@/types";
 import { Target } from "lucide-react";
 import { useState } from "react";
 

@@ -2,9 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Award, Medal, BadgeCheck } from "lucide-react";
-import { Course, TargetCredits } from "@/types";
-import { useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
+import { calculateRequiredGrades, cn } from "@/lib/utils";
 
 interface GPAResultsTableProps {
   currentGPA: number | null;
@@ -18,44 +16,6 @@ const gradeTargets = [
   { tier: "Giỏi", minGPA: 3.2, icon: Award, color: "text-emerald-500" },
   { tier: "Khá", minGPA: 2.5, icon: BadgeCheck, color: "text-blue-500" },
 ];
-
-const calculateRequiredGrades = (
-  currentGPA: number,
-  accumulatedCredits: number,
-  requiredCredits: number,
-  targetGPA: number
-): TargetCredits => {
-  const currentQualityPoints = currentGPA * accumulatedCredits;
-  const targetQualityPoints = targetGPA * requiredCredits;
-  const requiredQualityPoints = targetQualityPoints - currentQualityPoints;
-  const remainingCredits = requiredCredits - accumulatedCredits;
-
-  if (remainingCredits <= 0) {
-    return { a: 0, b: 0, c: 0, d: 0, finalGPA: currentGPA };
-  }
-
-  for (let a = 0; a <= remainingCredits; a++) {
-    for (let b = 0; b <= remainingCredits - a; b++) {
-      for (let c = 0; c <= remainingCredits - a - b; c++) {
-        const d = remainingCredits - a - b - c;
-        const totalQualityPoints = a * 4.0 + b * 3.0 + c * 2.0 + d * 1.0;
-
-        if (totalQualityPoints >= requiredQualityPoints) {
-          const finalGPA = (currentQualityPoints + totalQualityPoints) / requiredCredits;
-          return { a, b, c, d, finalGPA };
-        }
-      }
-    }
-  }
-
-  return {
-    a: remainingCredits,
-    b: 0,
-    c: 0,
-    d: 0,
-    finalGPA: (currentGPA * accumulatedCredits + remainingCredits * 4.0) / requiredCredits,
-  };
-};
 
 export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredits, mode }: GPAResultsTableProps) => {
   if (mode === "mode-b") {
@@ -186,23 +146,12 @@ export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredit
         <div className="mt-6 p-4 bg-muted/50 rounded-lg">
           <p className="text-sm text-muted-foreground mb-2">
             <strong>Lưu ý:</strong>
-            <br />- Các phép tính này giả định rằng bạn sẽ hoàn thành chính xác {remainingCredits} tín chỉ còn lại.
+            <br />- Các phép tính này giả định rằng bạn sẽ hoàn thành chính xác {remainingCredits} tín chỉ còn lại và
+            các học đều được tính vào số tín chỉ tích lũy.
+            <br />- Tiêu chí lựa chọn tổ hợp là tối <strong>thiểu hóa số tín chỉ có điểm A</strong> và{" "}
+            <strong>tối đa hóa số tín chỉ có điểm D</strong>.
             <br />- Các tổ hợp điểm chỉ là một trong nhiều cách có thể để đạt được từng mức GPA mục tiêu.
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-            <div>
-              <strong>A:</strong> 4.0
-            </div>
-            <div>
-              <strong>B:</strong> 3.0
-            </div>
-            <div>
-              <strong>C:</strong> 2.0
-            </div>
-            <div>
-              <strong>D:</strong> 1.0
-            </div>
-          </div>
         </div>
       </CardContent>
     </Card>

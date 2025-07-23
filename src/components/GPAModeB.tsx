@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Plus, Trash2, BookOpenCheck, FileSpreadsheet, X, Check, ChevronDown } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Plus, Trash2, BookOpenCheck, FileSpreadsheet, X, ChevronDown } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,9 +10,10 @@ import { useCoursesStore } from "@/hooks/useCoursesStore";
 import { Course, GPAModeProps, LetterGrade, letterGradeToPoints, Points } from "@/types";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
-import { cn, getCourseList } from "@/lib/utils";
+import { cn, getCourseList, readCourseFromFile } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "./ui/command";
+import * as XLSX from "xlsx";
 
 const calculateAcademicStatus = (courses: Course[]) => {
   if (courses.length === 0) return { currentGPA: null, accumulatedCredits: null };
@@ -50,10 +51,11 @@ export const GPAModeB = ({
   requiredCredits,
   setRequiredCredits,
 }: GPAModeProps) => {
-  const { courses, addCourse, updateCourse, removeCourse, resetCourses } = useCoursesStore();
+  const { courses, setCourses, addCourse, updateCourse, removeCourse, resetCourses } = useCoursesStore();
   const [newCourse, setNewCourse] = useState<Course>(initializeNewCourse());
-  const [courseList, setCourseList] = useState<{ courseId: string; name: string }[]>([]);
+  const [courseList, setCourseList] = useState<{ courseId: string; name: string; credits: number }[]>([]);
   const [courseListOpen, setCourseListOpen] = useState(false);
+  const inputExcelRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const fetchCourseList = async () => {
@@ -69,7 +71,7 @@ export const GPAModeB = ({
 
   useEffect(() => {
     const academicStatus = calculateAcademicStatus(courses);
-    setCurrentGPA(academicStatus.currentGPA);
+    setCurrentGPA(parseFloat(academicStatus.currentGPA?.toFixed(2)));
     setAccumulatedCredits(academicStatus.accumulatedCredits);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courses]);
@@ -83,6 +85,24 @@ export const GPAModeB = ({
     setNewCourse(initializeNewCourse());
   };
 
+  const handleLoadExcel = () => {
+    inputExcelRef.current?.click();
+  };
+
+  const loadExcelFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      toast.error("Vui lòng chọn một file Excel.");
+      return;
+    }
+    try {
+      const courses = await readCourseFromFile(file);
+      setCourses(courses);
+    } catch (err) {
+      console.error("Lỗi đọc file:", err);
+    }
+  };
+
   return (
     <Card className="bg-gradient-to-br from-card to-secondary/20">
       <CardHeader>
@@ -91,7 +111,8 @@ export const GPAModeB = ({
             <BookOpenCheck className="h-5 w-5 text-primary" />
             Danh sách môn học
           </div>
-          <Button className="flex gap-2 bg-green-600">
+          <input ref={inputExcelRef} type="file" accept=".xlsx, .xls" className="hidden" onChange={loadExcelFile} />
+          <Button className="flex gap-2 bg-green-600" onClick={() => handleLoadExcel()}>
             <FileSpreadsheet className="size-5" />
             Nhập từ file
           </Button>
@@ -129,7 +150,7 @@ export const GPAModeB = ({
                     </span>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="max-w-[19rem] sm:max-w-[15rem] md:max-w-[20rem] lg:max-w-[26rem] xl:max-w-[31rem] w-full p-0">
+                <PopoverContent className="w-[19rem] sm:w-[15rem] md:w-[20rem] lg:w-[26rem] xl:w-[31rem] p-0">
                   <Command>
                     <CommandInput placeholder="Tìm học phần..." />
                     <CommandEmpty>Không tìm thấy.</CommandEmpty>
@@ -140,14 +161,19 @@ export const GPAModeB = ({
                             key={course.courseId}
                             value={`${course.name} ${course.courseId}`}
                             onSelect={() => {
-                              setNewCourse({ ...newCourse, name: course.name, courseId: course.courseId });
+                              setNewCourse({
+                                ...newCourse,
+                                name: course.name,
+                                courseId: course.courseId,
+                                credits: course.credits,
+                              });
                               setCourseListOpen(false);
                             }}
                             className="flex items-center"
                           >
                             <div className="flex flex-col gap-y-2">
                               <span className="font-bold">{course.name}</span>
-                              <span className="!text-xs">Mã môn học: {course.courseId}</span>
+                              <span className="!text-xs">Mã: {course.courseId}</span>
                             </div>
                           </CommandItem>
                         ))}
@@ -185,13 +211,9 @@ export const GPAModeB = ({
 
             <div className="space-y-2 sm:col-span-1">
               <Label htmlFor="credits">Số tín chỉ</Label>
-              <Input
-                id="credits"
-                type="number"
-                disabled={true}
-                className="!cursor-default !text-black"
-                value={newCourse.credits}
-              />
+              <Button disabled={true} className="w-full bg-slate-400 text-black">
+                {newCourse.credits}
+              </Button>
             </div>
 
             <div className="flex items-end sm:col-span-3">
@@ -208,8 +230,11 @@ export const GPAModeB = ({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-semibold">Danh sách học phần đã học ({courses.length})</h3>
-              <Button className="bg-transparent border hover:bg-red-500 text-black hover:text-white flex items-center">
-                <X className="size-5" onClick={() => resetCourses()} />
+              <Button
+                className="bg-transparent border hover:bg-red-500 text-black hover:text-white flex items-center"
+                onClick={() => resetCourses()}
+              >
+                <X className="size-5" />
                 Xóa tất cả
               </Button>
             </div>
@@ -227,7 +252,7 @@ export const GPAModeB = ({
                       />
                       <div className="flex items-center gap-2 sm:col-span-2">
                         <div className="text-black">
-                          {newCourse.credits} <span className="text-sm">tín chỉ</span>
+                          {course.credits} <span className="text-sm">tín chỉ</span>
                         </div>
                       </div>
                       <Select
