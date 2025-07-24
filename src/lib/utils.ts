@@ -94,3 +94,14 @@ export const calculateRequiredGrades = (
     finalGPA: (currentGPA * accumulatedCredits + remainingCredits * 4.0) / requiredCredits,
   };
 };
+
+export const calculateAcademicStatus = (courses: Course[]) => {
+  if (courses.length === 0) return { currentGPA: null, accumulatedCredits: null };
+  const totalPoints = courses.reduce((sum, course) => sum + course.points * course.credits, 0);
+  const accumulatedCredits = courses.reduce((sum, course) => sum + course.credits, 0);
+  const currentGPA = accumulatedCredits > 0 ? totalPoints / accumulatedCredits : 0.0;
+  return {
+    currentGPA,
+    accumulatedCredits,
+  };
+};

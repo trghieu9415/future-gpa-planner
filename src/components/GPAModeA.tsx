@@ -2,16 +2,11 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen } from "lucide-react";
-import { GPAModeProps } from "@/types";
+import { useAcademicStatus } from "@/hooks/useAcademicStatus";
 
-export const GPAModeA = ({
-  currentGPA,
-  setCurrentGPA,
-  accumulatedCredits,
-  setAccumulatedCredits,
-  requiredCredits,
-  setRequiredCredits,
-}: GPAModeProps) => {
+export const GPAModeA = () => {
+  const { currentGPA, setCurrentGPA, accumulatedCredits, setAccumulatedCredits, requiredCredits, setRequiredCredits } =
+    useAcademicStatus();
   return (
     <Card className="bg-gradient-to-br from-card to-secondary/20">
       <CardHeader>

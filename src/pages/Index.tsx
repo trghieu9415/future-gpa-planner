@@ -11,9 +11,7 @@ const Index = () => {
   const [currentGPA, setCurrentGPA] = useState<number | null>(null);
   const [accumulatedCredits, setAccumulatedCredits] = useState<number | null>(null);
   const [requiredCredits, setRequiredCredits] = useState<number | null>(null);
-  const [courses, setCourses] = useState<
-    Array<{ id: string; name: string; grade: number; credits: number }>
-  >([]);
+  const [courses, setCourses] = useState<Array<{ id: string; name: string; grade: number; credits: number }>>([]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-secondary/30 to-primary/5">
@@ -29,8 +27,8 @@ const Index = () => {
             </h1>
           </div>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Plan your academic journey and estimate your potential graduation GPA with precision.
-            Calculate what grades you need to achieve your target.
+            Plan your academic journey and estimate your potential graduation GPA with precision. Calculate what grades
+            you need to achieve your target.
           </p>
         </div>
 

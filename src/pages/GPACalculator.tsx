@@ -3,13 +3,12 @@ import { GPAModeB } from "@/components/GPAModeB";
 import { GPAResultsTable } from "@/components/GPAResultsTable";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAcademicStatus } from "@/hooks/useAcademicStatus";
 import { Target } from "lucide-react";
 import { useState } from "react";
 
 export const GPACalculator = () => {
-  const [currentGPA, setCurrentGPA] = useState<number | null>(null);
-  const [accumulatedCredits, setAccumulatedCredits] = useState<number | null>(null);
-  const [requiredCredits, setRequiredCredits] = useState<number | null>(null);
+  const { currentGPA, accumulatedCredits, requiredCredits } = useAcademicStatus();
   const [mode, setMode] = useState<"mode-a" | "mode-b">("mode-a");
 
   return (
@@ -34,25 +33,11 @@ export const GPACalculator = () => {
             </TabsList>
 
             <TabsContent value="mode-a">
-              <GPAModeA
-                currentGPA={currentGPA}
-                setCurrentGPA={setCurrentGPA}
-                accumulatedCredits={accumulatedCredits}
-                setAccumulatedCredits={setAccumulatedCredits}
-                requiredCredits={requiredCredits}
-                setRequiredCredits={setRequiredCredits}
-              />
+              <GPAModeA />
             </TabsContent>
 
             <TabsContent value="mode-b">
-              <GPAModeB
-                currentGPA={currentGPA}
-                setCurrentGPA={setCurrentGPA}
-                accumulatedCredits={accumulatedCredits}
-                setAccumulatedCredits={setAccumulatedCredits}
-                requiredCredits={requiredCredits}
-                setRequiredCredits={setRequiredCredits}
-              />
+              <GPAModeB />
             </TabsContent>
           </Tabs>
         </CardContent>

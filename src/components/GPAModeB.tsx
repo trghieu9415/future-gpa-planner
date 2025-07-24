@@ -10,27 +10,10 @@ import { useCoursesStore } from "@/hooks/useCoursesStore";
 import { Course, GPAModeProps, LetterGrade, letterGradeToPoints, Points } from "@/types";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
-import { cn, getCourseList, readCourseFromFile } from "@/lib/utils";
+import { calculateAcademicStatus, cn, getCourseList, readCourseFromFile } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "./ui/command";
-import * as XLSX from "xlsx";
-
-const calculateAcademicStatus = (courses: Course[]) => {
-  if (courses.length === 0) return { currentGPA: null, accumulatedCredits: null };
-  const totalPoints = courses.reduce(
-    (sum, course) => (course.letterGrade === "F" ? sum : sum + course.points * course.credits),
-    0.0
-  );
-  const accumulatedCredits = courses.reduce(
-    (sum, course) => (course.letterGrade === "F" ? sum : sum + course.credits),
-    0.0
-  );
-  const currentGPA = accumulatedCredits > 0 ? totalPoints / accumulatedCredits : 0.0;
-  return {
-    currentGPA,
-    accumulatedCredits,
-  };
-};
+import { useAcademicStatus } from "@/hooks/useAcademicStatus";
 
 const initializeNewCourse = () => {
   return {
@@ -43,15 +26,11 @@ const initializeNewCourse = () => {
   } as Course;
 };
 
-export const GPAModeB = ({
-  currentGPA,
-  setCurrentGPA,
-  accumulatedCredits,
-  setAccumulatedCredits,
-  requiredCredits,
-  setRequiredCredits,
-}: GPAModeProps) => {
+export const GPAModeB = () => {
+  const { currentGPA, setCurrentGPA, accumulatedCredits, setAccumulatedCredits, requiredCredits, setRequiredCredits } =
+    useAcademicStatus();
   const { courses, setCourses, addCourse, updateCourse, removeCourse, resetCourses } = useCoursesStore();
+
   const [newCourse, setNewCourse] = useState<Course>(initializeNewCourse());
   const [courseList, setCourseList] = useState<{ courseId: string; name: string; credits: number }[]>([]);
   const [courseListOpen, setCourseListOpen] = useState(false);

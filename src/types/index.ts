@@ -33,3 +33,11 @@ export interface GPAModeProps {
   requiredCredits: number | null;
   setRequiredCredits: (value: number | null) => void;
 }
+export type Rule = { from: LetterGrade; to: LetterGrade; points: number };
+export type ImprovementPriority = Rule[];
+
+export interface ImprovementCourse {
+  course: Course;
+  rule: Rule;
+  impact: number; // Impact of the improvement in terms of credits * points
+}
