@@ -1,10 +1,11 @@
 import { cn } from "@/lib/utils";
-import { Calculator, GraduationCap, MoveUpRight } from "lucide-react";
+import { Calculator, CalendarDays, GraduationCap, MoveUpRight } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 const modeTabs = [
   { icon: Calculator, label: "Tính GPA tốt nghiệp", href: "/calculator" },
   { icon: MoveUpRight, label: "Kế hoạch cải thiện", href: "/improvement" },
+  { icon: CalendarDays, label: "Thời khóa biểu", href: "/scheduler" },
 ];
 
 export const Layout = () => {

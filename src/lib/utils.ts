@@ -105,3 +105,22 @@ export const calculateAcademicStatus = (courses: Course[]) => {
     accumulatedCredits,
   };
 };
+
+export const getWeekDateRange = (week: number) => {
+  const startDate = new Date(2025, 9, 1);
+  const weekStart = new Date(startDate);
+  weekStart.setDate(startDate.getDate() + (week - 1) * 7);
+
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  return `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
+};

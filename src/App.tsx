@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Layout } from "./components/layouts/Layout";
 import { GPACalculator } from "./pages/GPACalculator";
 import { Improvement } from "./pages/Improvement";
+import { Scheduler } from "./pages/Scheduler";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => (
             <Route index element={<Navigate to={"/calculator"} />} />
             <Route path="calculator" element={<GPACalculator />} />
             <Route path="improvement" element={<Improvement />} />
+            <Route path="scheduler" element={<Scheduler />} />
           </Route>
 
           <Route path="*" element={<Layout />} />
