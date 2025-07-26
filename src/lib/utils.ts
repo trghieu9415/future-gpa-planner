@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 import * as XLSX from "xlsx";
 import { v4 as uuidv4 } from "uuid";
 import { IGNORE_COURSE_IDS, LETTER_GRADES } from "@/types/const";
+import { OpenCourse } from "@/types/schedule";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -123,4 +124,16 @@ export const getWeekDateRange = (week: number) => {
   };
 
   return `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
+};
+
+export const getOpenCourseList = async (searchText?: string): Promise<OpenCourse[]> => {
+  const courses = (await fetch("/courses-se.json").then((res) => res.json())) as OpenCourse[];
+  if (searchText) {
+    const lowerSearchText = searchText.toLowerCase();
+    return courses.filter(
+      (course) =>
+        course.name.toLowerCase().includes(lowerSearchText) || course.courseId.toLowerCase().includes(lowerSearchText)
+    );
+  }
+  return courses;
 };

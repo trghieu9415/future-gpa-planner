@@ -1,37 +1,34 @@
+import { CourseSelect } from "@/components/CourseSelect";
 import { ScheduleGrid } from "@/components/ScheduleGrid";
+import { SelectedCourses } from "@/components/SelectedCourses";
 import { TabsChanger } from "@/components/TabsChanger";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getWeekDateRange } from "@/lib/utils";
+import { useScheduleStore } from "@/hooks/useScheduleStore";
+import { getOpenCourseList, getWeekDateRange } from "@/lib/utils";
 import { SignedCourse } from "@/types/schedule";
 import { Calendar } from "lucide-react";
-
-const tmpCourse = {
-  courseId: "111",
-  courseName: "Toán cao cấp",
-  groupId: "1",
-  schedule: [
-    {
-      teacher: "Nguyễn Văn A",
-      room: "101",
-      dayOfWeek: 2,
-      startPeriod: 1,
-      periodCount: 2,
-      studyWeeks: [1, 2, 3, 4],
-    },
-    {
-      teacher: "Nguyễn Văn A",
-      room: "101",
-      dayOfWeek: 4,
-      startPeriod: 3,
-      periodCount: 3,
-      studyWeeks: [1, 2, 3, 4],
-    },
-  ],
-} as SignedCourse;
+import { useEffect } from "react";
 
 export const Scheduler = () => {
+  const { schedules, getActivatedSchedule, addSchedule } = useScheduleStore();
+
+  useEffect(() => {
+    if (schedules.length === 0) {
+      addSchedule("Tab mới");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [schedules]);
+
   return (
     <div className="space-y-6">
+      <Card className="shadow-[var(--shadow-card)]">
+        <CardHeader>
+          <CardTitle>Danh sách môn học</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CourseSelect />
+        </CardContent>
+      </Card>
       <Card className="shadow-[var(--shadow-card)]">
         <CardHeader>
           <CardTitle className="flex items-center justify-between gap-2">
@@ -46,20 +43,17 @@ export const Scheduler = () => {
         </CardHeader>
         <CardContent>
           <TabsChanger />
-          <ScheduleGrid signedCourses={[tmpCourse]} />
+          <ScheduleGrid />
         </CardContent>
       </Card>
 
       {/* Placeholder for future schedule management features */}
       <Card className="shadow-[var(--shadow-card)]">
         <CardHeader>
-          <CardTitle>Chức năng sẽ sớm ra mắt</CardTitle>
+          <CardTitle>Danh sách môn học đã chọn</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">
-            Chúng tôi đang làm việc chăm chỉ để mang đến cho bạn trải nghiệm quản lý thời khóa biểu tốt nhất. Hãy quay
-            lại sau!
-          </p>
+          <SelectedCourses />
         </CardContent>
       </Card>
     </div>

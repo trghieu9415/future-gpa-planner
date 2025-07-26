@@ -41,11 +41,11 @@ All colors MUST be HSL.
     --academic-green: 142 76% 36%;
     --academic-gold: 45 93% 47%;
     --academic-navy: 220 39% 11%;
-    
+
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(220 14% 98%));
-    
+
     /* Shadows */
     --shadow-elegant: 0 4px 6px -1px hsl(220 85% 57% / 0.1), 0 2px 4px -1px hsl(220 85% 57% / 0.06);
     --shadow-card: 0 10px 15px -3px hsl(220 85% 57% / 0.1), 0 4px 6px -2px hsl(220 85% 57% / 0.05);
@@ -116,4 +116,35 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.tabs-wrapper {
+  @apply relative border border-x-0 border-b-0 p-2;
+  position: relative;
+  z-index: 0;
+}
+
+.tabs-wrapper::before,
+.tabs-wrapper::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 0.5rem; /* w-6 */
+  height: 1.5rem;
+  /* background-color: #0053f8; */
+  border: 1px solid #e5e7eb;
+  border-top: 0; /* hoặc màu viền bên ngoài */
+  z-index: 10;
+}
+
+.tabs-wrapper::before {
+  left: -0.5rem;
+  border-bottom-right-radius: 10px;
+  border-left: 0;
+}
+
+.tabs-wrapper::after {
+  right: -0.5rem;
+  border-bottom-left-radius: 10px;
+  border-right: 0;
 }

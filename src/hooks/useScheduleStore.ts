@@ -4,21 +4,23 @@ import { Schedule } from "@/types/schedule";
 export const useScheduleStore = create<{
   schedules: Schedule[];
   activatedScheduleId?: string;
+  sign: boolean;
   addSchedule: (scheduleName: string) => void;
   removeSchedule: (scheduleId: string) => void;
   setActivatedSchedule: (scheduleId: string) => void;
   getActivatedSchedule: () => Schedule | undefined;
-  renameSchedule: (id: string, newName: string) => void;
+  toggleSign: () => void;
 }>((set, get) => ({
   schedules: [],
   activatedScheduleId: undefined,
-
+  sign: false,
   addSchedule: (scheduleName) => {
     const newSchedule = new Schedule(scheduleName);
 
     set((state) => ({
       schedules: [...state.schedules, newSchedule],
       activatedScheduleId: newSchedule.id,
+      sign: !get().sign,
     }));
   },
 
@@ -30,21 +32,12 @@ export const useScheduleStore = create<{
       return {
         schedules: filtered,
         activatedScheduleId: isRemovedActive ? filtered[0]?.id : state.activatedScheduleId,
+        sign: !get().sign,
       };
     }),
 
-  setActivatedSchedule: (scheduleId) => set({ activatedScheduleId: scheduleId }),
+  setActivatedSchedule: (scheduleId) => set({ activatedScheduleId: scheduleId, sign: !get().sign }),
 
   getActivatedSchedule: () => get().schedules.find((s) => s.id === get().activatedScheduleId),
-
-  renameSchedule: (id, newName) =>
-    set((state) => {
-      const updatedSchedules = state.schedules.map((s) => {
-        if (s.id === id) {
-          s.name = newName;
-        }
-        return s;
-      });
-      return { schedules: updatedSchedules };
-    }),
+  toggleSign: () => set((state) => ({ sign: !state.sign })),
 }));

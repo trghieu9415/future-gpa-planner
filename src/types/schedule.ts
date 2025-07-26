@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 
 export interface OpenCourse {
-  id: string;
   courseId: string;
   name: string;
   credits: number;
@@ -25,6 +24,7 @@ export interface GroupSchedule {
 export interface SignedCourse {
   courseId: string;
   courseName?: string;
+  credits?: number;
   groupId: string;
   schedule: GroupSchedule[];
 }
@@ -48,14 +48,14 @@ export class Schedule {
       throw new Error(`Nhóm có ID ${groupId} không tồn tại trong học phần ${course.name}`);
     }
 
-    const existing = this.signedCourses.find((c) => c.courseId === course.id);
+    const existing = this.signedCourses.find((c) => c.courseId === course.courseId);
 
     // Nếu cùng course và cùng group → đã tồn tại → bỏ qua
     if (existing && existing.groupId === groupId) return;
 
     // Kiểm tra trùng lịch với các course khác
     this.signedCourses.forEach((signed) => {
-      if (signed.courseId !== course.id) {
+      if (signed.courseId !== course.courseId) {
         group.schedule.forEach((newItem) => {
           const isConflict = signed.schedule.some(
             (item) =>
@@ -65,7 +65,7 @@ export class Schedule {
               item.startPeriod + item.periodCount > newItem.startPeriod
           );
           if (isConflict) {
-            throw new Error(`Lịch học của học phần ${course.name} trùng với lịch học đã có trong lịch "${this.name}"`);
+            throw new Error(`"${course.name}" trùng với lịch học "${signed.courseName}"`);
           }
         });
       }
@@ -80,14 +80,23 @@ export class Schedule {
 
     // Thêm mới
     this.signedCourses.push({
-      courseId: course.id,
+      courseId: course.courseId,
       courseName: course.name,
       groupId,
+      credits: course.credits,
       schedule: group.schedule,
     });
   }
 
   removeCourse(courseId: string) {
     this.signedCourses = this.signedCourses.filter((c) => c.courseId !== courseId);
+  }
+
+  clearCourses() {
+    this.signedCourses = [];
+  }
+
+  hasCourseGroup(courseId: string, groupId: string): boolean {
+    return this.signedCourses.some((c) => c.courseId === courseId && c.groupId === groupId);
   }
 }

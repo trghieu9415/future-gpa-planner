@@ -4,15 +4,7 @@ import { Plus, X } from "lucide-react";
 import { Button } from "./ui/button";
 
 export const TabsChanger = () => {
-  const { schedules, getActivatedSchedule, addSchedule, removeSchedule, setActivatedSchedule, renameSchedule } =
-    useScheduleStore();
-
-  useEffect(() => {
-    if (schedules.length === 0) {
-      addSchedule("Tab 1");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [schedules]);
+  const { schedules, getActivatedSchedule, addSchedule, removeSchedule, setActivatedSchedule } = useScheduleStore();
 
   const [editingTabId, setEditingTabId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState("");
@@ -33,7 +25,7 @@ export const TabsChanger = () => {
 
   const handleRename = (tabId: string) => {
     if (editingName.trim()) {
-      renameSchedule(tabId, editingName.trim());
+      getActivatedSchedule().name = editingName.trim();
     }
     setEditingTabId(null);
     setEditingName("");
@@ -49,13 +41,15 @@ export const TabsChanger = () => {
   };
 
   return (
-    <div className="w-full grid grid-cols-6 gap-x-1 mb-1">
+    <div className="w-full grid grid-cols-6 gap-x-1 mb-1 mx-[0.5rem]">
       {schedules.length > 0 &&
         schedules.map((schedule) => (
           <div
             key={schedule.id}
             className={`flex items-center justify-between p-1 px-2 border-b h-8 cursor-pointer border rounded-md ${
-              getActivatedSchedule()?.id === schedule.id ? "bg-white border-b-0 rounded-b-none" : "bg-[#cccccc]"
+              getActivatedSchedule()?.id === schedule.id
+                ? "bg-white border-b-0 rounded-b-none tabs-wrapper"
+                : "bg-[#cccccc]"
             }`}
             onClick={() => setActivatedSchedule(schedule.id)}
             onDoubleClick={(e) => handleTabDoubleClick(e, schedule.id, schedule.name)}
@@ -86,10 +80,11 @@ export const TabsChanger = () => {
         ))}
       {schedules.length <= 5 && (
         <Button
-          className="h-8 w-8 bg-white border hover:bg-green-600 group"
-          onClick={() => addSchedule(`Tab ${schedules.length + 1}`)}
+          variant="link"
+          className="h-8 w-8 border-none group text-gray-500 hover:text-gray-700"
+          onClick={() => addSchedule(`Tab mới`)}
         >
-          <Plus className="size-4 text-black group-hover:text-white" />
+          <Plus className="size-4" />
         </Button>
       )}
     </div>

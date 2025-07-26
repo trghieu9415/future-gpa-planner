@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 interface CourseBlockProps {
   courseId: string;
   courseName: string;
+  groupId: string;
   teacher: string;
   room: string;
   gridRow: string;
@@ -14,6 +15,7 @@ interface CourseBlockProps {
 
 const getSubjectColorClass = (color: string) => {
   const colorMap: Record<string, string> = {
+    "0": "bg-rose-300 border-rose-400 hover:bg-rose-200",
     "1": "bg-slate-300 border-slate-400 hover:bg-slate-200",
     "2": "bg-emerald-300 border-emerald-400 hover:bg-emerald-100",
     "3": "bg-amber-300 border-amber-400 hover:bg-amber-200",
@@ -22,11 +24,20 @@ const getSubjectColorClass = (color: string) => {
     "6": "bg-yellow-400 border-yellow-500 hover:bg-yellow-200",
     "7": "bg-sky-300 border-sky-400 hover:bg-sky-200",
     "8": "bg-green-300 border-green-400 hover:bg-green-200",
+    "9": "bg-orange-300 border-orange-400 hover:bg-orange-200",
   };
   return colorMap[color] || colorMap["1"];
 };
 
-export const CourseBlock = ({ courseId, courseName, teacher, room, gridRow, gridColumn }: CourseBlockProps) => {
+export const CourseBlock = ({
+  courseId,
+  groupId,
+  courseName,
+  teacher,
+  room,
+  gridRow,
+  gridColumn,
+}: CourseBlockProps) => {
   return (
     <TooltipProvider delayDuration={100}>
       <Tooltip>
@@ -35,7 +46,7 @@ export const CourseBlock = ({ courseId, courseName, teacher, room, gridRow, grid
             className={cn(
               "p-2 cursor-pointer transition-all duration-200 hover:shadow-sm",
               "flex flex-col justify-center text-xs rounded-none border-l-4 border-y-0 border-r-0",
-              getSubjectColorClass((Math.floor(Math.random() * 8) + 1).toString())
+              getSubjectColorClass(courseId[5])
             )}
             style={{
               gridRow,
@@ -51,12 +62,15 @@ export const CourseBlock = ({ courseId, courseName, teacher, room, gridRow, grid
             </div>
           </Card>
         </TooltipTrigger>
-        <TooltipContent className="max-w-[200px] text-xs text-left text-gray-900">
+        <TooltipContent className="max-w-[250px] text-xs text-left text-gray-900">
           <p>
             <strong>Môn học:</strong> {courseName}
           </p>
           <p>
             <strong>Mã:</strong> {courseId}
+          </p>
+          <p>
+            <strong>Nhóm lớp:</strong> {groupId}
           </p>
           <p>
             <strong>Giảng viên:</strong> {teacher}

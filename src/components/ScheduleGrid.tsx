@@ -2,15 +2,22 @@ import { SignedCourses } from "@/types/schedule";
 import { CourseBlock } from "./CourseBlock";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select";
 import { getWeekDateRange } from "@/lib/utils";
+import { useScheduleStore } from "@/hooks/useScheduleStore";
+import { useEffect, useState } from "react";
 
 const daysOfWeek = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
 const periods = [1, 2, 3, 4, 5, "Trưa", 6, 7, 8, 9, 10, "Tối", 11, 12, 13];
 
-interface ScheduleGridProps {
-  signedCourses: SignedCourses;
-}
+export const ScheduleGrid = () => {
+  const { getActivatedSchedule, sign } = useScheduleStore();
+  const [signedCourses, setSignedCourses] = useState<SignedCourses>([]);
 
-export const ScheduleGrid = ({ signedCourses }: ScheduleGridProps) => {
+  useEffect(() => {
+    const signedCourses = getActivatedSchedule()?.signedCourses ?? [];
+    setSignedCourses(signedCourses);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sign]);
+
   return (
     <div className="w-full overflow-x-auto">
       <div className="min-w-[800px] shadow-lg">
@@ -75,6 +82,7 @@ export const ScheduleGrid = ({ signedCourses }: ScheduleGridProps) => {
                     key={`${signedCourse.courseId}-${scheduleItem.dayOfWeek}-${scheduleItem.startPeriod}`}
                     courseId={signedCourse.courseId}
                     courseName={signedCourse.courseName || "Unknown Course"}
+                    groupId={signedCourse.groupId}
                     teacher={scheduleItem.teacher}
                     room={scheduleItem.room}
                     gridRow={gridRow}
