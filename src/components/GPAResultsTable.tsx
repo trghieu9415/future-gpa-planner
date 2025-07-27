@@ -18,10 +18,6 @@ const gradeTargets = [
 ];
 
 export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredits, mode }: GPAResultsTableProps) => {
-  if (mode === "mode-b") {
-    console.warn("GPAResultsTable is not applicable for mode-b. Please implement the logic for mode-b.");
-  }
-
   const remainingCredits = requiredCredits && accumulatedCredits ? requiredCredits - accumulatedCredits : null;
 
   if (!currentGPA || !accumulatedCredits || !requiredCredits || !remainingCredits || remainingCredits <= 0) {

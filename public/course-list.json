@@ -105,11 +105,6 @@
     "credits": 4
   },
   {
-    "courseId": "862101",
-    "name": "Giáo dục thể chất (I)",
-    "credits": 1
-  },
-  {
     "courseId": "864005",
     "name": "Giải tích 1",
     "credits": 3
@@ -508,21 +503,6 @@
     "courseId": "861305",
     "name": "Lịch sử Đảng Cộng sản Việt Nam",
     "credits": 2
-  },
-  {
-    "courseId": "862406",
-    "name": "Giáo dục quốc phòng và an ninh I",
-    "credits": 3
-  },
-  {
-    "courseId": "862408",
-    "name": "Giáo dục quốc phòng và an ninh III",
-    "credits": 2
-  },
-  {
-    "courseId": "862409",
-    "name": "Giáo dục quốc phòng và an ninh IV",
-    "credits": 4
   },
   {
     "courseId": "835305",

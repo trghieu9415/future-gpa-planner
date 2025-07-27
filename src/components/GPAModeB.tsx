@@ -56,8 +56,16 @@ export const GPAModeB = () => {
   }, [courses]);
 
   const handleAddCourse = () => {
-    if (!newCourse.id || !newCourse.name || newCourse.credits <= 0 || newCourse.letterGrade === "F") {
+    if (!newCourse.id || !newCourse.name || newCourse.credits <= 0) {
       toast.error("Hãy nhập đủ thông tin của học phần.");
+      return;
+    }
+    if (newCourse.letterGrade === "F") {
+      toast.error("Điểm F sẽ không được tính vào tích lũy.");
+      return;
+    }
+    if (!requiredCredits) {
+      toast.error("Vui lòng nhập số tín chỉ yêu cầu trước khi thêm môn học.");
       return;
     }
     addCourse(newCourse);
@@ -269,20 +277,20 @@ export const GPAModeB = () => {
               </div>
             </ScrollArea>
 
-            {currentGPA !== null && accumulatedCredits !== null && requiredCredits !== null && requiredCredits > 0 && (
-              <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
+            {currentGPA && accumulatedCredits && requiredCredits && (
+              <div className="mt-6 p-4 bg-[#f3f6fc] rounded-lg border border-[#cdddfb]">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                   <div>
-                    <p className="text-sm text-muted-foreground">Số tín chỉ còn lại</p>
-                    <p className="text-2xl font-bold text-primary">{requiredCredits - accumulatedCredits}</p>
+                    <p className="text-sm text-[#7e7280]">Số tín chỉ còn lại</p>
+                    <p className="text-2xl font-bold text-[#3472ef]">{requiredCredits - accumulatedCredits}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">GPA hiện tại</p>
-                    <p className="text-2xl font-bold text-accent">{currentGPA.toFixed(2)}</p>
+                    <p className="text-sm text-[#7e7280]">GPA hiện tại</p>
+                    <p className="text-2xl font-bold text-[#16a249]">{currentGPA?.toFixed(2)}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Tiến độ</p>
-                    <p className="text-2xl font-bold text-academic-green">
+                    <p className="text-sm text-[#7e7280]">Tiến độ</p>
+                    <p className="text-2xl font-bold text-[#16a249]">
                       {Math.round((accumulatedCredits / requiredCredits) * 100)}%
                     </p>
                   </div>

@@ -31,7 +31,7 @@ export const GPAModeA = () => {
               onChange={(e) => setCurrentGPA(e.target.value ? parseFloat(e.target.value) : null)}
               className="text-lg"
             />
-            <p className="text-sm text-muted-foreground">Phạm vi: 0.0 - 4.0</p>
+            <p className="text-sm text-muted-foreground">Phạm vi: 0.00 - 4.00</p>
           </div>
 
           <div className="space-y-2">
@@ -64,19 +64,19 @@ export const GPAModeA = () => {
         </div>
 
         {currentGPA && accumulatedCredits && requiredCredits && (
-          <div className="mt-6 p-4 bg-primary/5 rounded-lg border border-primary/20">
+          <div className="mt-6 p-4 bg-[#f3f6fc] rounded-lg border border-[#cdddfb]">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
               <div>
-                <p className="text-sm text-muted-foreground">Số tín chỉ còn lại</p>
-                <p className="text-2xl font-bold text-primary">{requiredCredits - accumulatedCredits}</p>
+                <p className="text-sm text-[#7e7280]">Số tín chỉ còn lại</p>
+                <p className="text-2xl font-bold text-[#3472ef]">{requiredCredits - accumulatedCredits}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">GPA hiện tại</p>
-                <p className="text-2xl font-bold text-accent">{currentGPA.toFixed(2)}</p>
+                <p className="text-sm text-[#7e7280]">GPA hiện tại</p>
+                <p className="text-2xl font-bold text-[#16a249]">{currentGPA?.toFixed(2)}</p>
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Tiến độ</p>
-                <p className="text-2xl font-bold text-academic-green">
+                <p className="text-sm text-[#7e7280]">Tiến độ</p>
+                <p className="text-2xl font-bold text-[#16a249]">
                   {Math.round((accumulatedCredits / requiredCredits) * 100)}%
                 </p>
               </div>

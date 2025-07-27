@@ -43,30 +43,26 @@ export const SelectedCourses = () => {
             <TableBody className="divide-y divide-border">
               {signedCourses && signedCourses.length > 0 ? (
                 signedCourses.map((signedCourse) => (
-                  <>
-                    <TableRow key={signedCourse.courseId} className="divide-x divide-border">
-                      <TableCell className="whitespace-nowrap px-2 py-1.5 text-center">
-                        {signedCourse.courseId}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap px-2 py-1.5 text-start">
-                        {signedCourse.courseName}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap max-w-[15px] px-2 py-1.5 text-center">
-                        {signedCourse.groupId}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap max-w-[15px] px-2 py-1.5 text-center">
-                        {signedCourse.credits}
-                      </TableCell>
-                      <TableCell className="max-w-[15px] px-2 py-1.5 text-center">
-                        <div className="w-full h-6 flex items-center justify-center">
-                          <X
-                            className="size-5 hover:text-red-500 cursor-pointer transition"
-                            onClick={() => handleRemoveCourse(signedCourse.courseId)}
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  </>
+                  <TableRow key={signedCourse.courseId} className="divide-x divide-border">
+                    <TableCell className="whitespace-nowrap px-2 py-1.5 text-center">{signedCourse.courseId}</TableCell>
+                    <TableCell className="whitespace-nowrap px-2 py-1.5 text-start">
+                      {signedCourse.courseName}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap max-w-[15px] px-2 py-1.5 text-center">
+                      {signedCourse.groupId}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap max-w-[15px] px-2 py-1.5 text-center">
+                      {signedCourse.credits}
+                    </TableCell>
+                    <TableCell className="max-w-[15px] px-2 py-1.5 text-center">
+                      <div className="w-full h-6 flex items-center justify-center">
+                        <X
+                          className="size-5 hover:text-red-500 cursor-pointer transition"
+                          onClick={() => handleRemoveCourse(signedCourse.courseId)}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
                 ))
               ) : (
                 <TableRow>

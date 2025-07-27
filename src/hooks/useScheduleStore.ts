@@ -5,7 +5,7 @@ export const useScheduleStore = create<{
   schedules: Schedule[];
   activatedScheduleId?: string;
   sign: boolean;
-  addSchedule: (scheduleName: string) => void;
+  addSchedule: (scheduleName: string, schedule?: Schedule) => void;
   removeSchedule: (scheduleId: string) => void;
   setActivatedSchedule: (scheduleId: string) => void;
   getActivatedSchedule: () => Schedule | undefined;
@@ -14,8 +14,11 @@ export const useScheduleStore = create<{
   schedules: [],
   activatedScheduleId: undefined,
   sign: false,
-  addSchedule: (scheduleName) => {
-    const newSchedule = new Schedule(scheduleName);
+  addSchedule: (scheduleName, schedule) => {
+    let newSchedule = new Schedule(scheduleName);
+    if (schedule) {
+      newSchedule = schedule;
+    }
 
     set((state) => ({
       schedules: [...state.schedules, newSchedule],

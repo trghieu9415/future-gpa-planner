@@ -60,12 +60,27 @@ export class Schedule {
           const isConflict = signed.schedule.some(
             (item) =>
               item.dayOfWeek === newItem.dayOfWeek &&
-              item.studyWeeks.some((w) => newItem.studyWeeks.includes(w)) &&
+              item.startPeriod + item.periodCount > newItem.startPeriod &&
               item.startPeriod < newItem.startPeriod + newItem.periodCount &&
-              item.startPeriod + item.periodCount > newItem.startPeriod
+              item.studyWeeks.some((w) => newItem.studyWeeks.includes(w))
           );
           if (isConflict) {
             throw new Error(`"${course.name}" trùng với lịch học "${signed.courseName}"`);
+          }
+          const hasCampusConflict = signed.schedule.some(
+            (item) =>
+              item.dayOfWeek === newItem.dayOfWeek &&
+              item.room[0] !== newItem.room[0] &&
+              item.studyWeeks.some((w) => newItem.studyWeeks.includes(w)) &&
+              (item.startPeriod + item.periodCount === newItem.startPeriod ||
+                newItem.startPeriod + newItem.periodCount === item.startPeriod) &&
+              ![6, 10].includes(newItem.startPeriod) &&
+              ![6, 10].includes(item.startPeriod)
+          );
+          if (hasCampusConflict) {
+            throw new Error(
+              `"${course.name}" và "${signed.courseName}" không thể đăng ký do khác cơ sở học trong cùng một buổi`
+            );
           }
         });
       }

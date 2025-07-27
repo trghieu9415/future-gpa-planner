@@ -1,10 +1,11 @@
 import { cn } from "@/lib/utils";
 import { Calculator, CalendarDays, GraduationCap, MoveUpRight } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import { ScrollToTopButton } from "./ScrollToTopButton";
 
 const modeTabs = [
   { icon: Calculator, label: "Tính GPA tốt nghiệp", href: "/calculator" },
-  { icon: MoveUpRight, label: "Kế hoạch cải thiện", href: "/improvement" },
+  // { icon: MoveUpRight, label: "Kế hoạch cải thiện", href: "/improvement" },
   { icon: CalendarDays, label: "Thời khóa biểu", href: "/scheduler" },
 ];
 
@@ -16,10 +17,10 @@ export const Layout = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 bg-primary/10 rounded-full">
-              <GraduationCap className="h-8 w-8 text-primary" />
+            <div className="p-3 bg-[#18A5A7]/10 rounded-full">
+              <GraduationCap className="h-8 w-8 text-[#3472ef]" />
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r h-16 flex items-center from-primary to-accent bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-gradient-to-r h-16 flex items-center from-[#3472ef] to-[#16a14b] bg-clip-text text-transparent">
               Dự đoán GPA tốt nghiệp
             </h1>
           </div>
@@ -51,6 +52,7 @@ export const Layout = () => {
           <Outlet />
         </div>
       </div>
+      <ScrollToTopButton />
     </div>
   );
 };

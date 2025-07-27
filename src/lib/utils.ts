@@ -4,7 +4,9 @@ import { twMerge } from "tailwind-merge";
 import * as XLSX from "xlsx";
 import { v4 as uuidv4 } from "uuid";
 import { IGNORE_COURSE_IDS, LETTER_GRADES } from "@/types/const";
-import { OpenCourse } from "@/types/schedule";
+import { OpenCourse, Schedule } from "@/types/schedule";
+import { toPng } from "html-to-image";
+import { useScheduleStore } from "@/hooks/useScheduleStore";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -107,6 +109,8 @@ export const calculateAcademicStatus = (courses: Course[]) => {
   };
 };
 
+//---------------------------------------------------------------------------------------------------------------------------------------
+
 export const getWeekDateRange = (week: number) => {
   const startDate = new Date(2025, 9, 1);
   const weekStart = new Date(startDate);
@@ -136,4 +140,56 @@ export const getOpenCourseList = async (searchText?: string): Promise<OpenCourse
     );
   }
   return courses;
+};
+
+export const downloadElementScreenshot = async (element: HTMLDivElement, fileName: string) => {
+  const wrapper = document.createElement("div");
+
+  wrapper.style.padding = "5px";
+  wrapper.style.backgroundColor = "white";
+
+  const cloned = element.cloneNode(true) as HTMLElement;
+  wrapper.appendChild(cloned);
+
+  document.body.appendChild(wrapper);
+
+  try {
+    const dataUrl = await toPng(wrapper, {
+      backgroundColor: "white",
+      cacheBust: true,
+    });
+
+    const link = document.createElement("a");
+    link.href = dataUrl;
+    link.download = `${fileName}.png`;
+    link.click();
+  } finally {
+    document.body.removeChild(wrapper);
+  }
+};
+
+export const scheduleToJson = (schedule: Schedule) => {
+  const json = JSON.stringify(schedule);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${schedule.name}.json`;
+  link.click();
+
+  URL.revokeObjectURL(url);
+};
+
+export const jsonToSchedule = async (file: File): Promise<Schedule> => {
+  const text = await file.text();
+  try {
+    const json = JSON.parse(text);
+    const schedule = new Schedule(json.name);
+    schedule.id = json.id;
+    schedule.signedCourses = json.signedCourses ?? [];
+    return schedule;
+  } catch (err) {
+    throw new Error("Invalid JSON format.");
+  }
 };
