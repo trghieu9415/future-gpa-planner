@@ -6,7 +6,7 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
-    allowedHosts: [""],
+    allowedHosts: ["beamish-khapse-3dcafe.netlify.app"],
     host: "::",
     port: 8080,
   },
