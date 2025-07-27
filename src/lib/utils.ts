@@ -6,14 +6,16 @@ import { v4 as uuidv4 } from "uuid";
 import { IGNORE_COURSE_IDS, LETTER_GRADES } from "@/types/const";
 import { OpenCourse, Schedule } from "@/types/schedule";
 import { toPng } from "html-to-image";
-import { useScheduleStore } from "@/hooks/useScheduleStore";
+
+const COURSE_LIST_URL = "https://trghieu9415.github.io/cauhinh_dns_centos/course-list.json";
+const COURSES_SE_URL = "https://trghieu9415.github.io/cauhinh_dns_centos/courses-se.json";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export const getCourseList = async (): Promise<{ courseId: string; name: string; credits: number }[]> => {
-  const courses = await fetch("/course-list.json").then((res) => res.json());
+  const courses = await fetch(COURSE_LIST_URL).then((res) => res.json());
   return courses;
 };
 
@@ -131,7 +133,7 @@ export const getWeekDateRange = (week: number) => {
 };
 
 export const getOpenCourseList = async (searchText?: string): Promise<OpenCourse[]> => {
-  const courses = (await fetch("/courses-se.json").then((res) => res.json())) as OpenCourse[];
+  const courses = (await fetch(COURSES_SE_URL).then((res) => res.json())) as OpenCourse[];
   if (searchText) {
     const lowerSearchText = searchText.toLowerCase();
     return courses.filter(
@@ -147,6 +149,7 @@ export const downloadElementScreenshot = async (element: HTMLDivElement, fileNam
 
   wrapper.style.padding = "5px";
   wrapper.style.backgroundColor = "white";
+  wrapper.style.width = "1200px";
 
   const cloned = element.cloneNode(true) as HTMLElement;
   wrapper.appendChild(cloned);

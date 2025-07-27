@@ -1,7 +1,6 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen } from "lucide-react";
 import { useAcademicStatus } from "@/hooks/useAcademicStatus";
 
 export const GPAModeA = () => {
@@ -10,10 +9,7 @@ export const GPAModeA = () => {
   return (
     <Card className="bg-gradient-to-br from-card to-secondary/20">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-primary" />
-          Tình trạng học tập hiện tại
-        </CardTitle>
+        <CardTitle className="flex items-center gap-2">Tình trạng học tập hiện tại</CardTitle>
         <CardDescription>Nhập GPA hiện tại và thông tin về số tín chỉ</CardDescription>
       </CardHeader>
       <CardContent>
@@ -45,11 +41,11 @@ export const GPAModeA = () => {
               onChange={(e) => setAccumulatedCredits(e.target.value ? parseInt(e.target.value) : null)}
               className="text-lg"
             />
-            <p className="text-sm text-muted-foreground">Số tính chỉ đã hoàn thành</p>
+            <p className="text-sm text-muted-foreground">Số tín chỉ đã hoàn thành</p>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="required-credits">Số tính chỉ yêu cầu</Label>
+            <Label htmlFor="required-credits">Số tín chỉ yêu cầu</Label>
             <Input
               id="required-credits"
               type="number"
@@ -63,7 +59,7 @@ export const GPAModeA = () => {
           </div>
         </div>
 
-        {currentGPA && accumulatedCredits && requiredCredits && (
+        {currentGPA > 0 && accumulatedCredits > 0 && requiredCredits > 0 && (
           <div className="mt-6 p-4 bg-[#f3f6fc] rounded-lg border border-[#cdddfb]">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
               <div>
@@ -72,7 +68,7 @@ export const GPAModeA = () => {
               </div>
               <div>
                 <p className="text-sm text-[#7e7280]">GPA hiện tại</p>
-                <p className="text-2xl font-bold text-[#16a249]">{currentGPA?.toFixed(2)}</p>
+                <p className="text-2xl font-bold text-[#16a249]">{currentGPA.toFixed(2)}</p>
               </div>
               <div>
                 <p className="text-sm text-[#7e7280]">Tiến độ</p>

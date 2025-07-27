@@ -4,7 +4,6 @@ import { GPAResultsTable } from "@/components/GPAResultsTable";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAcademicStatus } from "@/hooks/useAcademicStatus";
-import { Target } from "lucide-react";
 import { useState } from "react";
 
 export const GPACalculator = () => {
@@ -15,10 +14,7 @@ export const GPACalculator = () => {
     <div className="space-y-6">
       <Card className="shadow-[var(--shadow-card)]">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-primary" />
-            Nhập dữ liệu học tập của bạn
-          </CardTitle>
+          <CardTitle className="flex items-center gap-2">Nhập dữ liệu học tập của bạn</CardTitle>
           <CardDescription>Chọn cách nhập dữ liệu bạn muốn để tính GPA tốt nghiệp dự kiến</CardDescription>
         </CardHeader>
         <CardContent>

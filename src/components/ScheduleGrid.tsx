@@ -1,6 +1,6 @@
 import { SignedCourses } from "@/types/schedule";
 import { CourseBlock } from "./CourseBlock";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { getWeekDateRange } from "@/lib/utils";
 import { useScheduleStore } from "@/hooks/useScheduleStore";
 import { useEffect, useState, forwardRef } from "react";

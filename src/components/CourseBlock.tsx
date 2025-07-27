@@ -1,4 +1,4 @@
-import { GroupSchedule, SignedCourse } from "@/types/schedule";
+import { SignedCourse } from "@/types/schedule";
 import { Card } from "./ui/card";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";

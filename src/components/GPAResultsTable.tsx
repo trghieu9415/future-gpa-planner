@@ -24,10 +24,7 @@ export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredit
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-primary" />
-            Yêu cầu về điểm
-          </CardTitle>
+          <CardTitle className="flex items-center gap-2">Yêu cầu về điểm</CardTitle>
           <CardDescription>
             Nhập dữ liệu học tập của bạn để xem cần đạt những điểm số nào cho từng mục tiêu GPA khác nhau.
           </CardDescription>
@@ -66,7 +63,7 @@ export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredit
                   GPA mục tiêu
                 </TableHead>
                 <TableHead colSpan={4} className="text-center">
-                  Số tính chỉ
+                  Số tín chỉ
                 </TableHead>
                 <TableHead rowSpan={2} className="text-center">
                   GPA tốt nghiệp
@@ -101,8 +98,8 @@ export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredit
                   <TableRow key={target.tier}>
                     <TableCell>
                       <div className="flex items-center justify-center gap-2">
-                        <IconComponent className={cn("h-4 w-4", styleComponent)} />
-                        <span className="font-medium">{target.tier}</span>
+                        <IconComponent className={cn("h-4 w-4 hidden md:flex", styleComponent)} />
+                        <span className="font-medium text-center">{target.tier}</span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -120,15 +117,16 @@ export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredit
                     <TableCell>
                       <div className="flex items-center justify-center">
                         <Badge
-                          className={
+                          className={cn(
+                            "cursor-default",
                             isAchieved
-                              ? "bg-accent text-accent-foreground"
+                              ? "bg-green-600 hover:bg-green-700 text-white"
                               : isAchievable
-                                ? "bg-yellow-400 text-black"
-                                : "bg-muted text-muted-foreground"
-                          }
+                                ? "bg-yellow-400 hover:bg-yellow-500 text-black"
+                                : "bg-slate-200 hover:bg-slate-300 text-gray-600"
+                          )}
                         >
-                          {isAchieved ? "Cần duy trì" : isAchievable ? "Có thể đạt" : "Cần học cải thiện"}
+                          {isAchieved ? "Cần duy trì" : isAchievable ? "Có thể đạt" : "Phải cải thiện"}
                         </Badge>
                       </div>
                     </TableCell>

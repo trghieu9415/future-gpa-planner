@@ -1,7 +1,8 @@
 import { cn } from "@/lib/utils";
-import { Calculator, CalendarDays, GraduationCap, MoveUpRight } from "lucide-react";
+import { Calculator, CalendarDays, GraduationCap } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { ScrollToTopButton } from "./ScrollToTopButton";
+import { Footer } from "./Footer";
 
 const modeTabs = [
   { icon: Calculator, label: "Tính GPA tốt nghiệp", href: "/calculator" },
@@ -52,6 +53,7 @@ export const Layout = () => {
           <Outlet />
         </div>
       </div>
+      <Footer />
       <ScrollToTopButton />
     </div>
   );

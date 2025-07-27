@@ -1,6 +1,6 @@
 import { ImprovementPriority } from ".";
 
-export const IGNORE_COURSE_IDS = ["862101", "862406", "862407", "862408", "862409"];
+export const IGNORE_COURSE_IDS = ["862101", "862406", "862407", "862408", "862409", "BOBA11", "BOBA12"];
 export const LETTER_GRADES = ["A", "B", "C", "D"];
 
 // Ưu tiên cải thiện dễ đạt trước (nhảy điểm ít nhưng dễ)

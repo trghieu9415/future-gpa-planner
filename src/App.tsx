@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Layout } from "./components/layouts/Layout";
 import { GPACalculator } from "./pages/GPACalculator";
-import { Improvement } from "./pages/Improvement";
 import { Scheduler } from "./pages/Scheduler";
 
 const queryClient = new QueryClient();

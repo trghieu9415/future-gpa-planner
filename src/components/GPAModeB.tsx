@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Plus, Trash2, BookOpenCheck, FileSpreadsheet, X, ChevronDown } from "lucide-react";
+import { Plus, Trash2, FileSpreadsheet, X, ChevronDown } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "./ui/scroll-area";
 import { useCoursesStore } from "@/hooks/useCoursesStore";
-import { Course, GPAModeProps, LetterGrade, letterGradeToPoints, Points } from "@/types";
+import { Course, LetterGrade, letterGradeToPoints } from "@/types";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { calculateAcademicStatus, cn, getCourseList, readCourseFromFile } from "@/lib/utils";
@@ -94,14 +94,11 @@ export const GPAModeB = () => {
     <Card className="bg-gradient-to-br from-card to-secondary/20">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <BookOpenCheck className="h-5 w-5 text-primary" />
-            Danh sách môn học
-          </div>
+          <div className="flex items-center gap-2">Danh sách môn học</div>
           <input ref={inputExcelRef} type="file" accept=".xlsx, .xls" className="hidden" onChange={loadExcelFile} />
-          <Button className="flex gap-2 bg-green-600" onClick={() => handleLoadExcel()}>
+          <Button className="flex gap-2 hover:bg-green-600 bg-green-500" onClick={() => handleLoadExcel()}>
             <FileSpreadsheet className="size-5" />
-            Nhập từ file
+            Nhập từ Excel
           </Button>
         </CardTitle>
         <CardDescription>Thêm môn học mà bạn đã hoàn thành để tính GPA</CardDescription>
@@ -125,7 +122,7 @@ export const GPAModeB = () => {
               />
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
             <div className="space-y-2 sm:col-span-6">
               <Label htmlFor="course-name">Tên môn học</Label>
               <Popover open={courseListOpen} onOpenChange={setCourseListOpen}>

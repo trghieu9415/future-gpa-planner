@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useScheduleStore } from "@/hooks/useScheduleStore";
 import { downloadElementScreenshot, getWeekDateRange, jsonToSchedule, scheduleToJson } from "@/lib/utils";
-import { Calendar, Camera, Import, Upload } from "lucide-react";
+import { Camera, Import, Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export const Scheduler = () => {
@@ -65,17 +65,14 @@ export const Scheduler = () => {
         <CardHeader className="flex">
           <CardTitle className="flex items-center justify-between gap-2">
             <div className="w-full flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-primary" />
-                Thời khóa biểu
-              </div>
+              <div className="flex items-center gap-2">Thời khóa biểu</div>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   className="hover:bg-red-500 bg-red-400 !text-white"
                   onClick={handleImportClick}
                 >
-                  <Import className="size 4" /> Nhập file
+                  <Import className="size 4" /> <span className="hidden sm:flex">Nhập file</span>
                 </Button>
                 <input ref={inputJsonRef} type="file" accept=".json" className="hidden" onChange={handleImportFile} />
 
@@ -84,7 +81,7 @@ export const Scheduler = () => {
                   className="hover:bg-emerald-600 bg-emerald-500 !text-white"
                   onClick={() => handleExportFile()}
                 >
-                  <Upload className="size 4" /> Xuất file
+                  <Upload className="size 4" /> <span className="hidden sm:flex">Xuất file</span>
                 </Button>
                 <Button
                   variant="outline"

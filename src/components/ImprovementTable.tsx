@@ -1,7 +1,7 @@
 import { Target } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card";
 import { useEffect, useState } from "react";
-import { Course, ImprovementCourse, ImprovementPriority, LetterGrade, Rule } from "@/types";
+import { Course, ImprovementCourse, ImprovementPriority, LetterGrade } from "@/types";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
 import { calculateRequiredGrades } from "@/lib/utils";
