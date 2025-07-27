@@ -132,15 +132,8 @@ export const getWeekDateRange = (week: number) => {
   return `${formatDate(weekStart)} - ${formatDate(weekEnd)}`;
 };
 
-export const getOpenCourseList = async (searchText?: string): Promise<OpenCourse[]> => {
+export const getOpenCourseList = async (): Promise<OpenCourse[]> => {
   const courses = (await fetch(COURSES_SE_URL).then((res) => res.json())) as OpenCourse[];
-  if (searchText) {
-    const lowerSearchText = searchText.toLowerCase();
-    return courses.filter(
-      (course) =>
-        course.name.toLowerCase().includes(lowerSearchText) || course.courseId.toLowerCase().includes(lowerSearchText)
-    );
-  }
   return courses;
 };
 

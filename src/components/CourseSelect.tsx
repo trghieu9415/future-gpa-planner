@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import React from "react";
 
 export const CourseSelect = () => {
+  const [courses, setCourses] = useState<OpenCourse[]>([]);
   const [openCourses, setOpenCourses] = useState<OpenCourse[]>([]);
   const [selectedOpenCourse, setSelectedOpenCourse] = useState<OpenCourse>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,14 +25,30 @@ export const CourseSelect = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const courses = await getOpenCourseList(searchQuery);
-        setOpenCourses(courses);
+        const list = await getOpenCourseList();
+        setCourses(list);
+        setOpenCourses(list);
       } catch (error) {
         console.error("Failed to fetch courses:", error);
       }
     };
+
     fetchCourses();
-  });
+  }, []);
+
+  useEffect(() => {
+    if (courses) {
+      if (searchQuery) {
+        const lower = searchQuery.toLowerCase();
+        const filteredCourses = courses.filter(
+          (course) => course.name.toLowerCase().includes(lower) || course.courseId.toLowerCase().includes(lower)
+        );
+        setOpenCourses(filteredCourses);
+      } else {
+        setOpenCourses(courses);
+      }
+    }
+  }, [searchQuery, courses]);
 
   const handleCourseSelect = (checked: boolean, course: OpenCourse, groupId: string) => {
     if (checked) {
