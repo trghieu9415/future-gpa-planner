@@ -8,6 +8,7 @@ import { useScheduleStore } from "@/hooks/useScheduleStore";
 import { downloadElementScreenshot, getWeekDateRange, jsonToSchedule, scheduleToJson } from "@/lib/utils";
 import { Camera, Import, Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 export const Scheduler = () => {
   const { schedules, getActivatedSchedule, addSchedule, setActivatedSchedule, toggleSign } = useScheduleStore();
@@ -17,7 +18,11 @@ export const Scheduler = () => {
   const inputJsonRef = useRef<HTMLInputElement | null>(null);
 
   const handleScreenshot = async () => {
-    await downloadElementScreenshot(scheduleGridRef.current, getActivatedSchedule()?.name || "schedule");
+    toast.promise(downloadElementScreenshot(scheduleGridRef.current, getActivatedSchedule()?.name || "schedule"), {
+      loading: "Đang tải...",
+      success: "Đã lưu ảnh!",
+      error: "Lưu ảnh thất bại!",
+    });
   };
 
   const handleExportFile = async () => {
@@ -25,6 +30,7 @@ export const Scheduler = () => {
     if (!schedule) return;
 
     scheduleToJson(schedule);
+    toast.success(`Đã tải về`, { description: `${schedule?.name}.json` });
   };
 
   const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {

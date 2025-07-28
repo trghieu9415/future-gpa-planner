@@ -32,6 +32,11 @@ export const useScheduleStore = create<{
       const filtered = state.schedules.filter((s) => s.id !== scheduleId);
       const isRemovedActive = state.activatedScheduleId === scheduleId;
 
+      if (filtered.length === 0) {
+        const schedule = new Schedule("Tab mới");
+        return { schedules: [schedule], activatedScheduleId: schedule.id, sign: !get().sign };
+      }
+
       return {
         schedules: filtered,
         activatedScheduleId: isRemovedActive ? filtered[0]?.id : state.activatedScheduleId,

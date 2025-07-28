@@ -162,6 +162,7 @@ export const downloadElementScreenshot = async (element: HTMLDivElement, fileNam
   } finally {
     document.body.removeChild(wrapper);
   }
+  return `${fileName}.png`;
 };
 
 export const scheduleToJson = (schedule: Schedule) => {

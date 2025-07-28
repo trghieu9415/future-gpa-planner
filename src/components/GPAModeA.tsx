@@ -6,6 +6,20 @@ import { useAcademicStatus } from "@/hooks/useAcademicStatus";
 export const GPAModeA = () => {
   const { currentGPA, setCurrentGPA, accumulatedCredits, setAccumulatedCredits, requiredCredits, setRequiredCredits } =
     useAcademicStatus();
+
+  const handleInputChange = (value: string) => {
+    if (value === "") {
+      setCurrentGPA(null);
+      return;
+    }
+
+    const parsed = parseFloat(value);
+
+    if (!isNaN(parsed) && parsed >= 0 && parsed <= 4) {
+      setCurrentGPA(parsed);
+    }
+  };
+
   return (
     <Card className="bg-gradient-to-br from-card to-secondary/20">
       <CardHeader>
@@ -23,8 +37,8 @@ export const GPAModeA = () => {
               min="0"
               max="4.0"
               step="0.01"
-              value={currentGPA || ""}
-              onChange={(e) => setCurrentGPA(e.target.value ? parseFloat(e.target.value) : null)}
+              value={currentGPA}
+              onChange={(e) => handleInputChange(e.target.value)}
               className="text-lg"
             />
             <p className="text-sm text-muted-foreground">Phạm vi: 0.00 - 4.00</p>
