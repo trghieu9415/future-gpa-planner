@@ -42,6 +42,7 @@ export const GPAModeB = () => {
         const courses = await getCourseList();
         setCourseList(courses);
       } catch (error) {
+        console.error("Error fetching course list:", error);
         setCourseList([]);
       }
     };
@@ -155,9 +156,13 @@ export const GPAModeB = () => {
                             }}
                             className="flex items-center"
                           >
-                            <div className="flex flex-col gap-y-2">
-                              <span className="font-bold">{course.name}</span>
-                              <span className="!text-xs">Mã: {course.courseId}</span>
+                            <div className="flex flex-col gap-y-2 w-full">
+                              <span className="font-bold line-clamp-2 overflow-auto">{course.name}</span>
+                              <span className="!text-xs text-slate-500">
+                                <span className="font-bold italic">Mã: </span>
+                                {course.courseId} // <span className="font-bold italic">Số TC: </span>
+                                {course.credits}
+                              </span>
                             </div>
                           </CommandItem>
                         ))}

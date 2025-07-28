@@ -14,8 +14,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const getCourseList = async (): Promise<{ courseId: string; name: string; credits: number }[]> => {
-  const courses = await fetch(COURSE_LIST_URL).then((res) => res.json());
+export const getCourseList = async (): Promise<Course[]> => {
+  const courses: Course[] = await fetch(COURSE_LIST_URL).then((res) => res.json());
   return courses;
 };
 

@@ -9,12 +9,12 @@ export const letterGradeToPoints: Record<LetterGrade, Points> = {
 };
 
 export interface Course {
-  id: string;
+  id?: string;
   courseId: string;
   name: string;
   credits: number;
-  points: Points;
-  letterGrade: LetterGrade;
+  points?: Points;
+  letterGrade?: LetterGrade;
 }
 
 export interface TargetCredits {
@@ -39,5 +39,5 @@ export type ImprovementPriority = Rule[];
 export interface ImprovementCourse {
   course: Course;
   rule: Rule;
-  impact: number; // Impact of the improvement in terms of credits * points
+  impact: number;
 }
