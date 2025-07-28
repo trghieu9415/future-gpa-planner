@@ -19,7 +19,7 @@ export const Scheduler = () => {
 
   const handleScreenshot = async () => {
     toast.promise(downloadElementScreenshot(scheduleGridRef.current, getActivatedSchedule()?.name || "schedule"), {
-      loading: "Đang tải...",
+      loading: "Đang lưu...",
       success: "Đã lưu ảnh!",
       error: "Lưu ảnh thất bại!",
     });

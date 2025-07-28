@@ -142,6 +142,7 @@ export const CourseSelect = () => {
                 <TableHead className="whitespace-nowrap px-2 py-1.5 text-center">Tên môn</TableHead>
                 <TableHead className="whitespace-nowrap px-2 py-1.5 text-center">Số TC</TableHead>
                 <TableHead className="whitespace-nowrap px-2 py-1.5 text-center">Nhóm</TableHead>
+                <TableHead className="whitespace-nowrap px-2 py-1.5 text-center">Sĩ số</TableHead>
                 <TableHead className="whitespace-nowrap px-2 py-1.5 text-center">Giảng viên</TableHead>
                 <TableHead className="whitespace-nowrap px-2 py-1.5 text-center">Thứ</TableHead>
                 <TableHead className="whitespace-nowrap px-2 py-1.5 text-center">Tiết BĐ</TableHead>
@@ -179,6 +180,9 @@ export const CourseSelect = () => {
                       </TableCell>
                       <TableCell rowSpan={group.schedule.length} className="whitespace-nowrap px-2 py-1.5 text-center">
                         {group.groupId}
+                      </TableCell>{" "}
+                      <TableCell rowSpan={group.schedule.length} className="whitespace-nowrap px-2 py-1.5 text-center">
+                        {group.classSize}
                       </TableCell>
                       <TableCell className="whitespace-nowrap px-2 py-1.5 text-start">
                         {group.schedule[0].teacher}

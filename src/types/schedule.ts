@@ -9,6 +9,7 @@ export interface OpenCourse {
 
 export interface CourseGroup {
   groupId: string;
+  classSize: number;
   schedule: GroupSchedule[];
 }
 
