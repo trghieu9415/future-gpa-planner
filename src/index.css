@@ -163,3 +163,14 @@ All colors MUST be HSL.
   border-bottom-left-radius: 10px;
   border-right: 0;
 }
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("./assets/fonts/Montserrat-VariableFont_wght.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  font-family: "Montserrat";
+}

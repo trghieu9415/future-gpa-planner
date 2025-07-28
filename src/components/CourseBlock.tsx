@@ -102,23 +102,23 @@ export const CourseBlock = ({
               </div>
             </Card>
           </TooltipTrigger>
-          <TooltipContent className="max-w-[250px] min-w-[200px] py-2">
-            <div className="text-xs text-left text-gray-900 mb-2">
-              <p>
-                <strong>Môn học:</strong> {courseName}
-              </p>
-              <p>
-                <strong>Mã:</strong> {courseId}
-              </p>
-              <p>
-                <strong>Nhóm lớp:</strong> {groupId}
-              </p>
-              <p>
-                <strong>Giảng viên:</strong> {teacher}
-              </p>
-              <p>
-                <strong>Phòng:</strong> {room}
-              </p>
+          <TooltipContent className="max-w-[300px] min-w-[200px] py-2">
+            <div className="text-xs text-left text-gray-900 mb-2 space-y-1 w-full">
+              <div className="w-full flex">
+                <span className="w-[80px] font-bold">Môn học</span> {courseName}
+              </div>
+              <div className="w-full flex">
+                <span className="w-[80px] font-bold">Mã</span> {courseId}
+              </div>
+              <div className="w-full flex">
+                <span className="w-[80px] font-bold">Nhóm lớp</span> {groupId}
+              </div>
+              <div className="w-full flex">
+                <span className="w-[80px] font-bold">Giảng viên</span> {teacher}
+              </div>
+              <div className="w-full flex">
+                <span className="!w-[80px] font-bold">Phòng</span> {room}
+              </div>
             </div>
             <div className="w-full flex justify-end gap-x-2">
               <Button

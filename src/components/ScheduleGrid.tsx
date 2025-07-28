@@ -112,7 +112,7 @@ export const ScheduleGrid = forwardRef<HTMLDivElement, ScheduleGridProps>(
               <SelectGroup>
                 {Array.from({ length: 20 }, (_, i) => (
                   <SelectItem key={i + 1} value={`${i + 1}`}>
-                    Tuần {i + 1} [{getWeekDateRange(i + 1)}]
+                    Tuần {i + 1}: <span className="tracking-[0.05rem]">{getWeekDateRange(i + 1)}</span>
                   </SelectItem>
                 ))}
               </SelectGroup>

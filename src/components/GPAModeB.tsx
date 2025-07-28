@@ -239,32 +239,34 @@ export const GPAModeB = () => {
                         onChange={(e) => updateCourse(course.id, { ...course, name: e.target.value })}
                         placeholder="Tên môn học"
                       />
-                      <div className="flex items-center gap-2 sm:col-span-2">
+                      <div className="flex items-center gap-2 xl:col-span-2">
                         <div className="text-black">
                           {course.credits} <span className="text-sm">tín chỉ</span>
                         </div>
                       </div>
-                      <Select
-                        value={course.letterGrade}
-                        onValueChange={(e) =>
-                          updateCourse(course.id, {
-                            ...course,
-                            letterGrade: e as LetterGrade,
-                            points: letterGradeToPoints[e],
-                          })
-                        }
-                      >
-                        <SelectTrigger className="sm:col-span-2">
-                          <SelectValue placeholder="Điểm chữ" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Object.entries(letterGradeToPoints).map(([letter, points]) => (
-                            <SelectItem value={letter}>
-                              {letter} ({points.toFixed(1)})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <div className="xl:col-span-2">
+                        <Select
+                          value={course.letterGrade}
+                          onValueChange={(e) =>
+                            updateCourse(course.id, {
+                              ...course,
+                              letterGrade: e as LetterGrade,
+                              points: letterGradeToPoints[e],
+                            })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Điểm chữ" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Object.entries(letterGradeToPoints).map(([letter, points]) => (
+                              <SelectItem value={letter}>
+                                {letter} ({points.toFixed(1)})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                     <Button
                       variant="outline"

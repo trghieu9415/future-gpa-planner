@@ -141,8 +141,8 @@ export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredit
           <p className="text-sm text-muted-foreground mb-2">
             <strong>Lưu ý:</strong>
             <br />- Các phép tính này giả định rằng bạn sẽ hoàn thành chính xác {remainingCredits} tín chỉ còn lại và
-            các học đều được tính vào số tín chỉ tích lũy.
-            <br />- Tiêu chí lựa chọn tổ hợp là tối <strong>thiểu hóa số tín chỉ có điểm A</strong> và{" "}
+            các học phần đều được tính vào tích lũy.
+            <br />- Tiêu chí lựa chọn tổ hợp là tối <strong>thiểu hóa số tín chỉ có điểm A </strong> và
             <strong>tối đa hóa số tín chỉ có điểm D</strong>.
             <br />- Các tổ hợp điểm chỉ là một trong nhiều cách có thể để đạt được từng mức GPA mục tiêu.
           </p>
