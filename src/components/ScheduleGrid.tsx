@@ -49,7 +49,7 @@ export const ScheduleGrid = forwardRef<HTMLDivElement, ScheduleGridProps>(
                   {typeof period === "number" ? (
                     <>
                       <div className="py-1 border flex items-center justify-center bg-[#f6f6ff]">
-                        <span className="text-sm font-medium text-foreground">Tiết {period}</span>
+                        <span className="text-sm font-semibold text-foreground">Tiết {period}</span>
                       </div>
                       {daysOfWeek.map((_, dayIndex) => (
                         <div key={`${period}-${dayIndex}`} className="py-1 border" />
@@ -60,7 +60,7 @@ export const ScheduleGrid = forwardRef<HTMLDivElement, ScheduleGridProps>(
                       key={`period-${period}`}
                       className="py-1 border col-span-7 flex items-center justify-center bg-[#8da2bd]"
                     >
-                      <span className="font-medium text-sm text-white">{period}</span>
+                      <span className="text-sm font-semibold text-white">{period}</span>
                     </div>
                   )}
                 </div>
@@ -109,7 +109,7 @@ export const ScheduleGrid = forwardRef<HTMLDivElement, ScheduleGridProps>(
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectGroup>
+              <SelectGroup className="max-h-[200px] overflow-y-auto">
                 {Array.from({ length: 20 }, (_, i) => (
                   <SelectItem key={i + 1} value={`${i + 1}`}>
                     Tuần {i + 1}: <span className="tracking-[0.05rem]">{getWeekDateRange(i + 1)}</span>

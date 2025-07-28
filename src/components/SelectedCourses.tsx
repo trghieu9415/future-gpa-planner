@@ -26,7 +26,7 @@ export const SelectedCourses = () => {
   return (
     <div className="w-full">
       <div className="my-4">
-        <Label className="text-md font-medium text-foreground mb-2 mr-2 block">Danh sách nhóm tổ:</Label>
+        <Label className="text-md font-bold text-foreground mb-2 mr-2 block">Danh sách nhóm tổ:</Label>
         <div className="overflow-x-auto">
           <Table className="table-auto border border-gray-200">
             <TableHeader>
@@ -70,10 +70,10 @@ export const SelectedCourses = () => {
                 </TableRow>
               )}
               <TableRow className="divide-x divide-border">
-                <TableCell colSpan={3} className="px-2 py-1.5 text-center font-medium">
+                <TableCell colSpan={3} className="px-2 py-1.5 text-center font-bold">
                   Tổng số tín chỉ
                 </TableCell>
-                <TableCell className="px-2 py-1.5 text-center font-medium">
+                <TableCell className="px-2 py-1.5 text-center font-bold">
                   {signedCourses.reduce((total, course) => total + (course.credits || 0), 0)}
                 </TableCell>
                 {signedCourses.length > 0 && (

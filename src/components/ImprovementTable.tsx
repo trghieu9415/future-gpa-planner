@@ -182,7 +182,7 @@ export const ImprovementTable = () => {
                 <TableBody>
                   {improvedCourses.map((item) => (
                     <TableRow key={item.course.id} className="hover:bg-muted/30 transition-colors">
-                      <TableCell className="font-medium">{item.course.name}</TableCell>
+                      <TableCell className="font-bold">{item.course.name}</TableCell>
                       <TableCell className="text-center">{item.course.credits}</TableCell>
                       <TableCell className="text-center">
                         <Badge className={getGradeStyles(item.course.letterGrade)}>{item.course.letterGrade}</Badge>

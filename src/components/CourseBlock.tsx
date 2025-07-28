@@ -93,7 +93,7 @@ export const CourseBlock = ({
                 gridColumn: gridColumn,
               }}
             >
-              <div className="text-gray-800 mb-1 leading-tight font-bold line-clamp-2">
+              <div className="text-gray-800 mb-1 leading-4 font-bold line-clamp-2">
                 {courseName} ({courseId})
               </div>
               <div className="text-xs text-gray-700">
@@ -102,36 +102,41 @@ export const CourseBlock = ({
               </div>
             </Card>
           </TooltipTrigger>
-          <TooltipContent className="max-w-[300px] min-w-[200px] py-2">
-            <div className="text-xs text-left text-gray-900 mb-2 space-y-1 w-full">
-              <div className="w-full flex">
-                <span className="w-[80px] font-bold">Môn học</span> {courseName}
+          <TooltipContent className="p-4 shadow-lg">
+            <div className="text-xs text-left text-gray-900 mb-1 space-y-1">
+              <div className="w-[280px] flex">
+                <span className="w-[80px] font-bold">Môn học</span>
+                <span className="w-[190px] line-clamp-3">{courseName}</span>
               </div>
-              <div className="w-full flex">
-                <span className="w-[80px] font-bold">Mã</span> {courseId}
+              <div className="w-[280px] flex">
+                <span className="w-[80px] font-bold">Mã</span>
+                <span className="w-[190px] line-clamp-3">{courseId}</span>
               </div>
-              <div className="w-full flex">
-                <span className="w-[80px] font-bold">Nhóm lớp</span> {groupId}
+              <div className="w-[280px] flex">
+                <span className="w-[80px] font-bold">Nhóm lớp</span>
+                <span className="w-[190px] line-clamp-3">{groupId}</span>
               </div>
-              <div className="w-full flex">
-                <span className="w-[80px] font-bold">Giảng viên</span> {teacher}
+              <div className="w-[280px] flex">
+                <span className="w-[80px] font-bold">Giảng viên</span>
+                <span className="w-[190px] line-clamp-3">{teacher}</span>
               </div>
-              <div className="w-full flex">
-                <span className="!w-[80px] font-bold">Phòng</span> {room}
+              <div className="w-[280px] flex">
+                <span className="!w-[80px] font-bold">Phòng</span>
+                <span className="w-[190px] line-clamp-3">{room}</span>
               </div>
             </div>
             <div className="w-full flex justify-end gap-x-2">
               <Button
                 onClick={handleRemove}
                 variant="outline"
-                className="h-5 w-8 text-xs font-light bg-white text-red-500 border-red-500 hover:bg-red-500 hover:text-white"
+                className="h-5 w-8 text-xs bg-white text-red-500 border-red-500 hover:bg-red-500 hover:text-white"
               >
                 Xóa
               </Button>
               <Button
                 onClick={() => handleOpenDialog()}
                 variant="outline"
-                className="h-5 w-8 text-xs font-light bg-white text-blue-500 border-blue-500 hover:bg-blue-500 hover:text-white"
+                className="h-5 w-8 text-xs bg-white text-blue-500 border-blue-500 hover:bg-blue-500 hover:text-white"
               >
                 Sửa
               </Button>

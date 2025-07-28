@@ -65,7 +65,7 @@ export const TabsChanger = () => {
                 className="border text-sm rounded px-2 py-1 w-full border-none focus:outline-none"
               />
             ) : (
-              <span className="font-medium truncate text-sm">{schedule.name}</span>
+              <span className="font-semibold truncate text-sm">{schedule.name}</span>
             )}
             <button
               className="text-gray-500 hover:text-gray-700 ml-2"

@@ -21,7 +21,7 @@ export const Layout = () => {
             <div className="p-3 bg-[#18A5A7]/10 rounded-full">
               <GraduationCap className="h-8 w-8 text-[#3472ef]" />
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r h-16 flex items-center from-[#3472ef] to-[#16a14b] bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-gradient-to-r flex h-20 items-center from-[#3472ef] to-[#16a14b] bg-clip-text text-transparent">
               Dự đoán GPA tốt nghiệp
             </h1>
           </div>

@@ -66,7 +66,7 @@ export const CourseSelect = () => {
   return (
     <div className="w-full">
       <div className="mt-2 mb-4">
-        <Label className="text-md font-medium text-foreground mb-2 mr-2 block">Môn học:</Label>
+        <Label className="text-md font-bold text-foreground mb-2 mr-2 block">Môn học:</Label>
         <div className="flex items-center space-x-2">
           <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
             <PopoverTrigger asChild>
@@ -87,7 +87,7 @@ export const CourseSelect = () => {
 
             <PopoverContent className="w-96 p-0">
               <div className="p-3 border-b">
-                <h3 className="font-medium text-foreground">Danh sách môn học</h3>
+                <h3 className="font-bold text-foreground">Danh sách môn học</h3>
               </div>
 
               <div className="p-3 border-b">
@@ -114,9 +114,9 @@ export const CourseSelect = () => {
                       }}
                     >
                       <div className="flex-1">
-                        <div className="font-medium">{openCourse.name}</div>
-                        <div className="text-xs">
-                          <span className="font-medium">Mã: </span>
+                        <div className="font-bold">{openCourse.name}</div>
+                        <div className="text-xs mt-1 ">
+                          <span className="font-semibold italic">Mã: </span>
                           {openCourse.courseId}
                         </div>
                       </div>
@@ -132,7 +132,7 @@ export const CourseSelect = () => {
         </div>
       </div>
       <div className="my-4">
-        <Label className="text-md font-medium text-foreground mb-2 mr-2 block">Danh sách nhóm tổ:</Label>
+        <Label className="text-md font-bold text-foreground mb-2 mr-2 block">Danh sách nhóm tổ:</Label>
         <div className="overflow-auto">
           <Table className="table-auto border border-gray-200">
             <TableHeader>
