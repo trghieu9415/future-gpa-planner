@@ -84,7 +84,7 @@ export const CourseBlock = ({
           <TooltipTrigger asChild>
             <Card
               className={cn(
-                "p-2 cursor-pointer transition-all duration-200 hover:shadow-sm",
+                "px-2 py-1 cursor-pointer transition-all duration-200 hover:shadow-sm",
                 "flex flex-col justify-center text-xs rounded-none border-l-4 border-y-0 border-r-0",
                 getSubjectColorClass(courseId[5])
               )}
