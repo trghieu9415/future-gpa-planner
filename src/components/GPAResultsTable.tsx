@@ -8,7 +8,6 @@ interface GPAResultsTableProps {
   currentGPA: number | null;
   accumulatedCredits: number | null;
   requiredCredits: number | null;
-  mode: "mode-a" | "mode-b";
 }
 
 const gradeTargets = [
@@ -17,7 +16,7 @@ const gradeTargets = [
   { tier: "Khá", minGPA: 2.5, icon: BadgeCheck, color: "text-blue-500" },
 ];
 
-export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredits, mode }: GPAResultsTableProps) => {
+export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredits }: GPAResultsTableProps) => {
   const remainingCredits = requiredCredits && accumulatedCredits ? requiredCredits - accumulatedCredits : null;
 
   if (!currentGPA || !accumulatedCredits || !requiredCredits || !remainingCredits || remainingCredits <= 0) {

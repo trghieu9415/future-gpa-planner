@@ -39,14 +39,24 @@ export const readCourseFromFile = (file: File): Promise<Course[]> => {
             !IGNORE_COURSE_IDS.includes(courseId) &&
             LETTER_GRADES.includes(row[7]?.toString().trim())
           ) {
-            courses.push({
-              id: uuidv4(),
-              courseId,
-              name: row[3]?.toString().trim(),
-              credits: parseInt(row[4]),
-              points: parseFloat(row[6]) as Points,
-              letterGrade: row[7]?.toString().trim() as LetterGrade,
-            });
+            const course = courses.find((c) => c.courseId === courseId);
+
+            if (course) {
+              const points = parseFloat(row[6]);
+              if (course.points < points) {
+                course.points = points as Points;
+                course.letterGrade = row[7]?.toString().trim() as LetterGrade;
+              }
+            } else {
+              courses.push({
+                id: uuidv4(),
+                courseId,
+                name: row[3]?.toString().trim(),
+                credits: parseInt(row[4]),
+                points: parseFloat(row[6]) as Points,
+                letterGrade: row[7]?.toString().trim() as LetterGrade,
+              });
+            }
           }
         });
 
@@ -101,11 +111,22 @@ export const calculateRequiredGrades = (
 };
 
 export const calculateAcademicStatus = (courses: Course[]) => {
-  if (courses.length === 0) return { currentGPA: null, accumulatedCredits: null };
   const totalPoints = courses.reduce((sum, course) => sum + course.points * course.credits, 0);
   const accumulatedCredits = courses.reduce((sum, course) => sum + course.credits, 0);
   const currentGPA = accumulatedCredits > 0 ? totalPoints / accumulatedCredits : 0.0;
+
+  const totalA = courses.reduce((count, course) => count + (course.letterGrade === "A" ? course.credits : 0), 0);
+  const totalB = courses.reduce((count, course) => count + (course.letterGrade === "B" ? course.credits : 0), 0);
+  const totalC = courses.reduce((count, course) => count + (course.letterGrade === "C" ? course.credits : 0), 0);
+  const totalD = courses.reduce((count, course) => count + (course.letterGrade === "D" ? course.credits : 0), 0);
+
   return {
+    totalState: {
+      totalA,
+      totalB,
+      totalC,
+      totalD,
+    },
     currentGPA,
     accumulatedCredits,
   };
@@ -114,7 +135,7 @@ export const calculateAcademicStatus = (courses: Course[]) => {
 //---------------------------------------------------------------------------------------------------------------------------------------
 
 export const getWeekDateRange = (week: number) => {
-  const startDate = new Date(2025, 9, 1);
+  const startDate = new Date(2025, 8, 1);
   const weekStart = new Date(startDate);
   weekStart.setDate(startDate.getDate() + (week - 1) * 7);
 

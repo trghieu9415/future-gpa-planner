@@ -21,7 +21,7 @@ const App = () => (
             <Route path="scheduler" element={<Scheduler />} />
           </Route>
 
-          <Route path="*" element={<Layout />} />
+          <Route path="*" element={<Navigate to={"/scheduler"} />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

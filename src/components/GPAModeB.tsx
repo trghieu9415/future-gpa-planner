@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Plus, Trash2, FileSpreadsheet, X, ChevronDown } from "lucide-react";
+import { Plus, FileSpreadsheet, X, ChevronDown } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import { calculateAcademicStatus, cn, getCourseList, readCourseFromFile } from "
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "./ui/command";
 import { useAcademicStatus } from "@/hooks/useAcademicStatus";
+import { CourseList } from "./CourseList";
 
 const initializeNewCourse = () => {
   return {
@@ -29,7 +30,7 @@ const initializeNewCourse = () => {
 export const GPAModeB = () => {
   const { currentGPA, setCurrentGPA, accumulatedCredits, setAccumulatedCredits, requiredCredits, setRequiredCredits } =
     useAcademicStatus();
-  const { courses, setCourses, addCourse, updateCourse, removeCourse, resetCourses } = useCoursesStore();
+  const { courses, setCourses, addCourse, resetCourses, totalState, setTotalState } = useCoursesStore();
 
   const [newCourse, setNewCourse] = useState<Course>(initializeNewCourse());
   const [courseList, setCourseList] = useState<{ courseId: string; name: string; credits: number }[]>([]);
@@ -51,6 +52,7 @@ export const GPAModeB = () => {
 
   useEffect(() => {
     const academicStatus = calculateAcademicStatus(courses);
+    setTotalState(academicStatus.totalState);
     setCurrentGPA(parseFloat(academicStatus.currentGPA?.toFixed(2)));
     setAccumulatedCredits(academicStatus.accumulatedCredits);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -75,6 +77,7 @@ export const GPAModeB = () => {
 
   const handleLoadExcel = () => {
     inputExcelRef.current?.click();
+    inputExcelRef.current.value = "";
   };
 
   const loadExcelFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -227,79 +230,47 @@ export const GPAModeB = () => {
                 Xóa tất cả
               </Button>
             </div>
-            <ScrollArea className="h-72 border rounded-lg p-2">
-              <div className="space-y-2">
-                {courses.map((course) => (
-                  <div key={course.id} className="flex items-center gap-3 p-3 bg-card border rounded-lg">
-                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-12 gap-3">
-                      <div className="flex justify-center items-center font-mono text-slate-500">{course.courseId}</div>
-                      <Input
-                        className="sm:col-span-6"
-                        value={course.name}
-                        onChange={(e) => updateCourse(course.id, { ...course, name: e.target.value })}
-                        placeholder="Tên môn học"
-                      />
-                      <div className="flex items-center gap-2 xl:col-span-2">
-                        <div className="text-black">
-                          {course.credits} <span className="text-sm">tín chỉ</span>
-                        </div>
-                      </div>
-                      <div className="xl:col-span-2">
-                        <Select
-                          value={course.letterGrade}
-                          onValueChange={(e) =>
-                            updateCourse(course.id, {
-                              ...course,
-                              letterGrade: e as LetterGrade,
-                              points: letterGradeToPoints[e],
-                            })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Điểm chữ" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Object.entries(letterGradeToPoints).map(([letter, points]) => (
-                              <SelectItem value={letter}>
-                                {letter} ({points.toFixed(1)})
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeCourse(course.id)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
+            <CourseList />
 
-            {currentGPA && accumulatedCredits && requiredCredits && (
-              <div className="mt-6 p-4 bg-[#f3f6fc] rounded-lg border border-[#cdddfb]">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                  <div>
-                    <p className="text-sm text-[#7e7280]">Số tín chỉ còn lại</p>
-                    <p className="text-2xl font-bold text-[#3472ef]">{requiredCredits - accumulatedCredits}</p>
+            {currentGPA > 0 && accumulatedCredits > 0 && requiredCredits > 0 && (
+              <>
+                <div className="flex gap-x-10 mx-4">
+                  <div className="flex gap-x-2">
+                    <span className="font-bold">Số tín chỉ A:</span>
+                    <span>{totalState.totalA ?? ""}</span>
                   </div>
-                  <div>
-                    <p className="text-sm text-[#7e7280]">GPA hiện tại</p>
-                    <p className="text-2xl font-bold text-[#16a249]">{currentGPA?.toFixed(2)}</p>
+                  <div className="flex gap-x-2">
+                    <span className="font-bold">Số tín chỉ B:</span>
+                    <span>{totalState.totalB ?? ""}</span>
                   </div>
-                  <div>
-                    <p className="text-sm text-[#7e7280]">Tiến độ</p>
-                    <p className="text-2xl font-bold text-[#16a249]">
-                      {Math.round((accumulatedCredits / requiredCredits) * 100)}%
-                    </p>
+                  <div className="flex gap-x-2">
+                    <span className="font-bold">Số tín chỉ C:</span>
+                    <span>{totalState.totalC ?? ""}</span>
+                  </div>
+                  <div className="flex gap-x-2">
+                    <span className="font-bold">Số tín chỉ D:</span>
+                    <span>{totalState.totalD ?? ""}</span>
                   </div>
                 </div>
-              </div>
+                <div className="mt-6 p-4 bg-[#f3f6fc] rounded-lg border border-[#cdddfb]">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                    <div>
+                      <p className="text-sm text-[#7e7280]">Số tín chỉ còn lại</p>
+                      <p className="text-2xl font-bold text-[#3472ef]">{requiredCredits - accumulatedCredits}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-[#7e7280]">GPA hiện tại</p>
+                      <p className="text-2xl font-bold text-[#16a249]">{currentGPA?.toFixed(2)}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-[#7e7280]">Tiến độ</p>
+                      <p className="text-2xl font-bold text-[#16a249]">
+                        {Math.round((accumulatedCredits / requiredCredits) * 100)}%
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </>
             )}
           </div>
         )}

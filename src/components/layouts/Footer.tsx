@@ -3,7 +3,7 @@ export const Footer = () => {
     <footer className="bg-gradient-to-r from-slate-800 to-slate-900 text-white mt-10 shadow-inner">
       <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="text-center md:text-left text-sm">
-          ©2025 - <span className="font-semibold">3122560017</span>
+          ©2025 - <span className="font-semibold">HnS - SVSGU</span>
         </div>
         <div className="flex gap-4 text-sm">
           <a
