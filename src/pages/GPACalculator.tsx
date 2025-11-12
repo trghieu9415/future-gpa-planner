@@ -5,10 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAcademicStatus } from "@/hooks/useAcademicStatus";
 import { useState } from "react";
+import { CustomCreditPlanner } from "@/components/CustomCreditPlanner"; // Import component mới
 
 export const GPACalculator = () => {
   const { currentGPA, accumulatedCredits, requiredCredits } = useAcademicStatus();
   const [mode, setMode] = useState<"mode-a" | "mode-b">("mode-a");
+
+  const isDataValid = currentGPA && accumulatedCredits && requiredCredits && requiredCredits > accumulatedCredits;
 
   return (
     <div className="space-y-6">
@@ -44,8 +47,16 @@ export const GPACalculator = () => {
         currentGPA={currentGPA}
         accumulatedCredits={accumulatedCredits}
         requiredCredits={requiredCredits}
-        mode={mode}
       />
+
+      {/* Custom Planner Section - Thêm vào đây */}
+      {isDataValid && (
+        <CustomCreditPlanner
+          currentGPA={currentGPA}
+          accumulatedCredits={accumulatedCredits}
+          requiredCredits={requiredCredits}
+        />
+      )}
     </div>
   );
 };

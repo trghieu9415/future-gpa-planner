@@ -7,8 +7,8 @@ import { IGNORE_COURSE_IDS, LETTER_GRADES } from "@/types/const";
 import { OpenCourse, Schedule } from "@/types/schedule";
 import { toPng } from "html-to-image";
 
-const COURSE_LIST_URL = "https://trghieu9415.github.io/cauhinh_dns_centos/course-list.json";
-const COURSES_SE_URL = "https://trghieu9415.github.io/cauhinh_dns_centos/courses-se.json";
+const COURSE_LIST_URL = "https://raw.githubusercontent.com/trghieu9415/cauhinh_dns_centos/main/course-list.json";
+const COURSES_SE_URL = "https://raw.githubusercontent.com/trghieu9415/cauhinh_dns_centos/main/courses-se.json";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -135,7 +135,7 @@ export const calculateAcademicStatus = (courses: Course[]) => {
 //---------------------------------------------------------------------------------------------------------------------------------------
 
 export const getWeekDateRange = (week: number) => {
-  const startDate = new Date(2025, 8, 1);
+  const startDate = new Date(2025, 11, 22);
   const weekStart = new Date(startDate);
   weekStart.setDate(startDate.getDate() + (week - 1) * 7);
 

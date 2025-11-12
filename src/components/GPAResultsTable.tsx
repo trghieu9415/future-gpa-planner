@@ -1,8 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Award, Medal, BadgeCheck } from "lucide-react";
+import { TrendingUp, Award, Medal, BadgeCheck, Target } from "lucide-react";
 import { calculateRequiredGrades, cn } from "@/lib/utils";
+import { useState } from "react";
+import { Input } from "./ui/input";
 
 interface GPAResultsTableProps {
   currentGPA: number | null;
@@ -17,6 +19,7 @@ const gradeTargets = [
 ];
 
 export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredits }: GPAResultsTableProps) => {
+  const [customTargetGPA, setCustomTargetGPA] = useState<number | null>(null);
   const remainingCredits = requiredCredits && accumulatedCredits ? requiredCredits - accumulatedCredits : null;
 
   if (!currentGPA || !accumulatedCredits || !requiredCredits || !remainingCredits || remainingCredits <= 0) {
@@ -37,6 +40,13 @@ export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredit
       </Card>
     );
   }
+
+  const customRequirements =
+    customTargetGPA && customTargetGPA > 0 && customTargetGPA <= 4
+      ? calculateRequiredGrades(currentGPA, accumulatedCredits, requiredCredits, customTargetGPA)
+      : null;
+
+  const isCustomAchievable = customRequirements ? customRequirements.finalGPA >= customTargetGPA : false;
 
   return (
     <Card>
@@ -129,6 +139,59 @@ export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredit
                   </TableRow>
                 );
               })}
+              {/* Custom GPA Row */}
+              <TableRow>
+                <TableCell>
+                  <div className="flex items-center justify-center gap-2">
+                    <Target className={cn("h-4 w-4 hidden md:flex", "text-gray-500")} />
+                    <span className="font-bold text-center">Tùy chỉnh</span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center justify-center">
+                    <Input
+                      type="number"
+                      placeholder="3.85"
+                      min="0"
+                      max="4.0"
+                      step="0.01"
+                      className="h-8 w-16 text-center font-mono 
+												appearance-none	[-moz-appearance:textfield]
+												[&::-webkit-inner-spin-button]:appearance-none
+												[&::-webkit-outer-spin-button]:appearance-none"
+                      value={customTargetGPA ?? ""}
+                      onFocus={(event) => event.target.select()}
+                      onChange={(e) => {
+                        const parsed = parseFloat(e.target.value);
+                        setCustomTargetGPA(isNaN(parsed) ? null : parsed);
+                      }}
+                    />
+                  </div>
+                </TableCell>
+                <TableCell className="text-center font-mono">{customRequirements?.a ?? "-"}</TableCell>
+                <TableCell className="text-center font-mono">{customRequirements?.b ?? "-"}</TableCell>
+                <TableCell className="text-center font-mono">{customRequirements?.c ?? "-"}</TableCell>
+                <TableCell className="text-center font-mono">{customRequirements?.d ?? "-"}</TableCell>
+                <TableCell className="text-center font-mono">
+                  {customRequirements ? customRequirements.finalGPA.toFixed(2) : "-"}
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center justify-center">
+                    {customRequirements && (
+                      <Badge
+                        className={cn(
+                          "cursor-default",
+                          isCustomAchievable
+                            ? "bg-yellow-400 hover:bg-yellow-500 text-black"
+                            : "bg-slate-200 hover:bg-slate-300 text-gray-600"
+                        )}
+                      >
+                        {isCustomAchievable ? "Có thể đạt" : "Phải cải thiện"}
+                      </Badge>
+                    )}
+                  </div>
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </div>

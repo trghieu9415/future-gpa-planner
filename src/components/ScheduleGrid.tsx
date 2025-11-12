@@ -110,7 +110,7 @@ export const ScheduleGrid = forwardRef<HTMLDivElement, ScheduleGridProps>(
             </SelectTrigger>
             <SelectContent>
               <SelectGroup className="max-h-[200px] overflow-y-auto">
-                {Array.from({ length: 20 }, (_, i) => (
+                {Array.from({ length: 27 }, (_, i) => (
                   <SelectItem key={i + 1} value={`${i + 1}`}>
                     Tuần {i + 1}: <span className="tracking-[0.05rem]">{getWeekDateRange(i + 1)}</span>
                   </SelectItem>
