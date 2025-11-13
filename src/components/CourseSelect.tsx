@@ -72,7 +72,7 @@ export const CourseSelect = () => {
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="w-96 justify-between h-8"
+                className="md:w-96 w-80 justify-between h-8"
                 role="combobox"
                 aria-expanded={popoverOpen}
               >
@@ -85,7 +85,7 @@ export const CourseSelect = () => {
               </Button>
             </PopoverTrigger>
 
-            <PopoverContent className="w-96 p-0">
+            <PopoverContent className="md:w-96 w-80 p-0">
               <div className="p-3 border-b">
                 <h3 className="font-bold text-foreground">Danh sách môn học</h3>
               </div>
@@ -102,7 +102,7 @@ export const CourseSelect = () => {
                 </div>
               </div>
 
-              <ScrollArea className="h-52 w-96 overflow-auto">
+              <ScrollArea className="h-52 md:w-96 w-80 overflow-auto">
                 <div className="p-2">
                   {openCourses.map((openCourse) => (
                     <div

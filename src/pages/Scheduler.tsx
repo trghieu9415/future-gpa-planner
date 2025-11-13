@@ -70,9 +70,9 @@ export const Scheduler = () => {
       <Card className="shadow-[var(--shadow-card)]">
         <CardHeader className="flex">
           <CardTitle className="flex items-center justify-between gap-2">
-            <div className="w-full flex items-center justify-between">
+            <div className="w-full flex-col-reverse flex  items-start sm:items-center sm:justify-between sm:flex-row">
               <div className="flex items-center gap-2">Thời khóa biểu</div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 sm:mb-0 mb-4">
                 <Button
                   variant="outline"
                   className="hover:bg-red-500 bg-red-400 !text-white"
