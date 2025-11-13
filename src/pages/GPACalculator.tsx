@@ -21,7 +21,8 @@ export const GPACalculator = () => {
           <CardDescription>Chọn cách nhập dữ liệu bạn muốn để tính GPA tốt nghiệp dự kiến</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs
+          <GPAModeA />
+          {/* <Tabs
             defaultValue="mode-a"
             className="space-y-6"
             onValueChange={(val) => setMode(val as "mode-a" | "mode-b")}
@@ -32,13 +33,12 @@ export const GPACalculator = () => {
             </TabsList>
 
             <TabsContent value="mode-a">
-              <GPAModeA />
             </TabsContent>
 
             <TabsContent value="mode-b">
               <GPAModeB />
             </TabsContent>
-          </Tabs>
+          </Tabs> */}
         </CardContent>
       </Card>
 

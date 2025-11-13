@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "./ui/input";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { Calculator, HelpCircle } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -86,10 +86,7 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 leading-7">
-          <Calculator className="h-5 w-5" />
-          Công cụ lập kế hoạch tín chỉ tùy chỉnh
-        </CardTitle>
+        <CardTitle className="flex items-center gap-2 leading-7">Công cụ lập kế hoạch tín chỉ tùy chỉnh</CardTitle>
         <CardDescription>
           Nhập số tín chỉ dự định đạt được cho mỗi loại điểm và số tín chỉ muốn cải thiện để xem kết quả.
         </CardDescription>
@@ -97,7 +94,51 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
       <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
         {/* CỘT 1: Tín chỉ các môn học mới */}
         <div className="md:col-span-1">
-          <h4 className="font-semibold mb-2 text-sm">Tín chỉ các môn học mới</h4>
+          <div className="flex items-center gap-2 mb-2">
+            <h4 className="font-semibold text-sm">Tín chỉ các môn học mới</h4>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="icon" className="h-5 w-5 rounded-full">
+                  <HelpCircle className="h-3 w-3" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Giải thích về Tín chỉ các môn học mới</DialogTitle>
+                  <DialogDescription className="text-justify flex-col space-y-1 pt-2">
+                    <p>
+                      Phần này giúp bạn dự đoán kết quả cho các học phần chưa học trong số tín chỉ còn lại của chương
+                      trình đào tạo.
+                    </p>
+                    <p>
+                      Nhập tổng số tín chỉ bạn dự kiến sẽ đạt được cho mỗi loại điểm (A, B, C, D). Công cụ sẽ dựa vào đó
+                      để tính toán GPA dự kiến của bạn."
+                    </p>
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <ul className="list-disc pl-5 space-y-2 text-sm text-muted-foreground">
+                    <li>
+                      <span className="font-semibold text-foreground">Điểm A (4.0):</span> Cho các môn bạn tự tin sẽ đạt
+                      điểm A.
+                    </li>
+                    <li>
+                      <span className="font-semibold text-foreground">Điểm B (3.0):</span> Cho các môn bạn dự kiến đạt
+                      điểm B.
+                    </li>
+                    <li>
+                      <span className="font-semibold text-foreground">Điểm C (2.0):</span> Cho các môn bạn dự kiến đạt
+                      điểm C.
+                    </li>
+                    <li>
+                      <span className="font-semibold text-foreground">Điểm D (1.0):</span> Cho các môn bạn chỉ cần qua
+                      môn.
+                    </li>
+                  </ul>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
           <Table>
             <TableHeader>
               <TableRow>
@@ -207,9 +248,9 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                   <div className="flex flex-col space-y-1">
                     <h5 className="font-semibold">Tăng 3 điểm</h5>
                     <p className="text-sm text-muted-foreground">
-                      Nhập tổng số tín chỉ của các môn bạn dự định cải thiện lên 1 bậc điểm.
-                      <br />- Từ <span className="font-mono font-semibold text-foreground">D</span> lên{" "}
-                      <span className="font-mono font-semibold text-foreground">A</span>
+                      Nhập tổng số tín chỉ của các môn bạn dự định cải thiện từ{" "}
+                      <span className="font-mono font-semibold text-foreground">D</span> lên{" "}
+                      <span className="font-mono font-semibold text-foreground">A</span>.
                     </p>
                   </div>
                 </div>
