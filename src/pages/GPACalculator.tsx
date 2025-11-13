@@ -17,7 +17,7 @@ export const GPACalculator = () => {
     <div className="space-y-6">
       <Card className="shadow-[var(--shadow-card)]">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">Nhập dữ liệu học tập của bạn</CardTitle>
+          <CardTitle className="flex items-center gap-2 leading-7">Nhập dữ liệu học tập của bạn</CardTitle>
           <CardDescription>Chọn cách nhập dữ liệu bạn muốn để tính GPA tốt nghiệp dự kiến</CardDescription>
         </CardHeader>
         <CardContent>

@@ -23,7 +23,7 @@ export const GPAModeA = () => {
   return (
     <Card className="bg-gradient-to-br from-card to-secondary/20">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">Tình trạng học tập hiện tại</CardTitle>
+        <CardTitle className="flex items-center gap-2 leading-7">Tình trạng học tập hiện tại</CardTitle>
         <CardDescription>Nhập GPA hiện tại và thông tin về số tín chỉ</CardDescription>
       </CardHeader>
       <CardContent>

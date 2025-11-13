@@ -97,7 +97,7 @@ export const GPAModeB = () => {
   return (
     <Card className="bg-gradient-to-br from-card to-secondary/20">
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
+        <CardTitle className="flex items-center justify-between leading-7">
           <div className="flex items-center gap-2">Danh sách môn học</div>
           <input ref={inputExcelRef} type="file" accept=".xlsx, .xls" className="hidden" onChange={loadExcelFile} />
           <Button className="flex gap-2 hover:bg-green-600 bg-green-500" onClick={() => handleLoadExcel()}>

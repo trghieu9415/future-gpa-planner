@@ -51,7 +51,9 @@ export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredit
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">Yêu cầu điểm số để đạt các mục tiêu tốt nghiệp</CardTitle>
+        <CardTitle className="flex items-center gap-2 leading-7">
+          Yêu cầu điểm số để đạt các mục tiêu tốt nghiệp
+        </CardTitle>
         <CardDescription>
           Dựa trên {accumulatedCredits} tín chỉ đã hoàn thành với GPA hiện tại là {currentGPA.toFixed(2)}. Hiển thị yêu
           cầu điểm số cho {remainingCredits} tín chỉ còn lại.
@@ -201,8 +203,9 @@ export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredit
             <strong>Lưu ý:</strong>
             <br />- Các phép tính này giả định rằng bạn sẽ hoàn thành chính xác {remainingCredits} tín chỉ còn lại và
             các học phần đều được tính vào tích lũy.
-            <br />- Tiêu chí lựa chọn tổ hợp là tối <strong>thiểu hóa số tín chỉ có điểm A </strong> và{" "}
-            <strong>tối đa hóa số tín chỉ có điểm D</strong>.
+            <br />- Tiêu chí chọn tổ hợp điểm là ưu tiên cách dùng <strong>ít tín chỉ điểm A nhất</strong>.
+            <br />- Thuật toán sẽ ưu tiên dùng các tín chỉ điểm D, C và B trước, chỉ dùng đến điểm A khi cần để đạt mục
+            tiêu.
             <br />- Các tổ hợp điểm chỉ là một trong nhiều cách có thể để đạt được từng mức GPA mục tiêu.
           </p>
         </div>

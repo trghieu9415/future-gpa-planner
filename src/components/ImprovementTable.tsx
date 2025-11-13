@@ -123,7 +123,7 @@ export const ImprovementTable = () => {
     <div className="space-y-6">
       <Card className="shadow-[var(--shadow-card)]">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 leading-7">
             <Target className="h-5 w-5 text-primary" />
             Bảng cải thiện GPA
           </CardTitle>
