@@ -15,10 +15,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route index element={<Navigate to={"/scheduler"} />} />
+            <Route index element={<Navigate to={"/calculator"} />} />
             <Route path="calculator" element={<GPACalculator />} />
-            {/* <Route path="improvement" element={<Improvement />} /> */}
             <Route path="scheduler" element={<Scheduler />} />
+            {/* <Route path="improvement" element={<Improvement />} /> */}
           </Route>
 
           <Route path="*" element={<Navigate to={"/scheduler"} />} />

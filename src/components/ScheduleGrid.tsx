@@ -82,7 +82,13 @@ export const ScheduleGrid = forwardRef<HTMLDivElement, ScheduleGridProps>(
                   const startPeriod = scheduleItem.startPeriod;
                   const extraRowAdd = startPeriod > 10 ? 2 : startPeriod > 5 ? 1 : 0;
 
-                  const gridRow = `${scheduleItem.startPeriod + extraRowAdd} / span ${scheduleItem.periodCount}`;
+                  let periodCount = scheduleItem.periodCount;
+
+                  if (startPeriod + scheduleItem.periodCount > 11 && startPeriod <= 10) {
+                    periodCount += 1;
+                  }
+
+                  const gridRow = `${scheduleItem.startPeriod + extraRowAdd} / span ${periodCount}`;
                   const gridColumn = scheduleItem.dayOfWeek;
 
                   return (

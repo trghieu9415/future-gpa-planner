@@ -12,7 +12,7 @@ import { toast } from "sonner";
 
 export const Scheduler = () => {
   const { schedules, getActivatedSchedule, addSchedule, setActivatedSchedule, toggleSign } = useScheduleStore();
-  const [week, setWeek] = useState(1);
+  const [week, setWeek] = useState(4);
 
   const scheduleGridRef = useRef<HTMLDivElement>(null);
   const inputJsonRef = useRef<HTMLInputElement | null>(null);

@@ -1,12 +1,23 @@
 import { SignedCourse } from "@/types/schedule";
 import { Card } from "./ui/card";
 import { cn } from "@/lib/utils";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { Button } from "./ui/button";
 import { useRef, useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { useScheduleStore } from "@/hooks/useScheduleStore";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { BookText, Hash, MapPin, Palette, User, Users } from "lucide-react";
+import { Label } from "./ui/label";
 
 interface CourseBlockProps {
   courseId: string;
@@ -19,21 +30,30 @@ interface CourseBlockProps {
   gridColumn: number;
 }
 
-const getSubjectColorClass = (color: string) => {
-  const colorMap: Record<string, string> = {
-    "0": "bg-rose-300 border-rose-400 hover:bg-rose-200",
-    "1": "bg-slate-300 border-slate-400 hover:bg-slate-200",
-    "2": "bg-emerald-300 border-emerald-400 hover:bg-emerald-100",
-    "3": "bg-amber-300 border-amber-400 hover:bg-amber-200",
-    "4": "bg-zinc-300 border-zinc-400 hover:bg-zinc-200",
-    "5": "bg-violet-300 border-violet-400 hover:bg-violet-200",
-    "6": "bg-yellow-400 border-yellow-500 hover:bg-yellow-200",
-    "7": "bg-sky-300 border-sky-400 hover:bg-sky-200",
-    "8": "bg-green-300 border-green-400 hover:bg-green-200",
-    "9": "bg-orange-300 border-orange-400 hover:bg-orange-200",
-  };
-  return colorMap[color] || colorMap["1"];
+// Bảng màu mặc định (dạng hex) nếu người dùng chưa tùy chỉnh
+const defaultHexPalette: Record<string, string> = {
+  "0": "#fecaca", // rose-300
+  "1": "#d1d5db", // slate-300
+  "2": "#a7f3d0", // emerald-300
+  "3": "#fde68a", // amber-300
+  "4": " #d4d4d8", // zinc-300
+  "5": "#ddd6fe", // violet-300
+  "6": "#facc15", // yellow-400
+  "7": "#bae6fd", // sky-300
+  "8": "#86efac", // green-300
+  "9": "#fed7aa", // orange-300
 };
+
+// Component con để hiển thị thông tin
+const InfoRow = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: React.ReactNode }) => (
+  <div className="flex items-center gap-3 py-1.5 border-b border-dashed">
+    <div className="text-muted-foreground">{icon}</div>
+    <div className="flex-1">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <div className="font-semibold text-sm">{value}</div>
+    </div>
+  </div>
+);
 
 export const CourseBlock = ({
   courseId,
@@ -45,146 +65,151 @@ export const CourseBlock = ({
   gridRow,
   gridColumn,
 }: CourseBlockProps) => {
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+  // State giờ sẽ lưu mã màu hex
+  const [selectedColor, setSelectedColor] = useState(
+    signedCourse.color || defaultHexPalette[courseId[5]] || defaultHexPalette["1"]
+  );
 
   const { toggleSign, getActivatedSchedule } = useScheduleStore();
-
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleOpenDialog = () => {
-    setDialogOpen(true);
-    inputRef.current?.focus();
-    inputRef.current?.select();
+  const handleOpenEditDialog = () => {
+    // Khởi tạo màu khi mở dialog
+    setSelectedColor(signedCourse.color || defaultHexPalette[courseId[5]] || defaultHexPalette["1"]);
+    setEditDialogOpen(true);
+    setTimeout(() => {
+      inputRef.current?.blur();
+    }, 100);
   };
 
   const handleSaveChanges = () => {
-    signedCourse.courseName = inputRef.current?.value || signedCourse.courseName;
-    toggleSign();
-    setDialogOpen(false);
+    const schedule = getActivatedSchedule();
+    if (schedule) {
+      const course = schedule.signedCourses.find((c) => c.courseId === signedCourse.courseId);
+      if (course) {
+        course.courseName = inputRef.current?.value || course.courseName;
+        course.color = selectedColor; // Lưu mã màu hex
+      }
+      toggleSign();
+    }
+    setEditDialogOpen(false);
   };
 
   const handleEnterPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSaveChanges();
-      setDialogOpen(false);
-    } else if (e.key === "Escape") {
-      setDialogOpen(false);
-    }
+    if (e.key === "Enter") handleSaveChanges();
+    else if (e.key === "Escape") setEditDialogOpen(false);
   };
 
-  const handleRemove = () => {
+  const handleConfirmRemove = () => {
     getActivatedSchedule()?.removeCourse(signedCourse.courseId);
     toggleSign();
+    setEditDialogOpen(false);
+    setIsAlertOpen(false);
   };
+
+  // Lấy màu cuối cùng để hiển thị (ưu tiên màu tùy chỉnh)
+  const finalColor = signedCourse.color || defaultHexPalette[courseId[5]] || defaultHexPalette["1"];
 
   return (
     <>
-      <TooltipProvider delayDuration={100}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Card
-              className={cn(
-                "px-2 py-1 cursor-pointer transition-all duration-200 hover:shadow-sm",
-                "flex flex-col justify-center text-xs rounded-none border-l-4 border-y-0 border-r-0",
-                getSubjectColorClass(courseId[5])
-              )}
-              style={{
-                gridRow,
-                gridColumn: gridColumn,
-              }}
-            >
-              <div className="text-gray-800 mb-1 leading-4 font-bold line-clamp-2">
-                {courseName} ({courseId})
-              </div>
-              <div className="text-xs text-gray-700">
-                <span className="font-bold italic">Phòng: </span>
-                {room}
-              </div>
-            </Card>
-          </TooltipTrigger>
-          <TooltipContent className="p-4 shadow-lg">
-            <div className="text-xs text-left text-gray-900 mb-1 space-y-1">
-              <div className="w-[280px] flex">
-                <span className="w-[80px] font-bold">Môn học</span>
-                <span className="w-[190px] line-clamp-3">{courseName}</span>
-              </div>
-              <div className="w-[280px] flex">
-                <span className="w-[80px] font-bold">Mã</span>
-                <span className="w-[190px] line-clamp-3">{courseId}</span>
-              </div>
-              <div className="w-[280px] flex">
-                <span className="w-[80px] font-bold">Nhóm lớp</span>
-                <span className="w-[190px] line-clamp-3">{groupId}</span>
-              </div>
-              <div className="w-[280px] flex">
-                <span className="w-[80px] font-bold">Giảng viên</span>
-                <span className="w-[190px] line-clamp-3">{teacher}</span>
-              </div>
-              <div className="w-[280px] flex">
-                <span className="!w-[80px] font-bold">Phòng</span>
-                <span className="w-[190px] line-clamp-3">{room}</span>
-              </div>
-            </div>
-            <div className="w-full flex justify-end gap-x-2">
-              <Button
-                onClick={handleRemove}
-                variant="outline"
-                className="h-5 w-8 text-xs bg-white text-red-500 border-red-500 hover:bg-red-500 hover:text-white"
-              >
-                Xóa
-              </Button>
-              <Button
-                onClick={() => handleOpenDialog()}
-                variant="outline"
-                className="h-5 w-8 text-xs bg-white text-blue-500 border-blue-500 hover:bg-blue-500 hover:text-white"
-              >
-                Sửa
-              </Button>
-            </div>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <div
+        style={{
+          gridRow: gridRow,
+          gridColumn: gridColumn,
+          backgroundColor: "white",
+        }}
+      ></div>
+      <Card
+        onClick={handleOpenEditDialog}
+        className={cn(
+          "px-2 py-1 cursor-pointer transition-all duration-200 hover:shadow-sm",
+          "flex flex-col justify-center text-xs rounded-none border-l-4 border-y-0 border-r-0"
+        )}
+        style={{
+          gridRow: gridRow,
+          gridColumn: gridColumn,
+          backgroundColor: `${finalColor}33`, // Thêm độ trong suốt 20% cho màu nền
+          borderLeftColor: finalColor,
+        }}
+      >
+        <div className="text-gray-800 mb-1 leading-4 font-bold line-clamp-2">
+          {courseName} ({courseId})
+        </div>
+        <div className="text-xs text-gray-700">
+          <span className="font-bold italic">Phòng: </span>
+          {room}
+        </div>
+      </Card>
+
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
         <DialogContent>
-          <DialogTitle>
-            <div className="text-md font-semibold mb-4">Thông tin chi tiết</div>
-          </DialogTitle>
-          <DialogDescription className="sr-only">Xem hoặc chỉnh sửa thông tin môn học đã chọn</DialogDescription>
-          <div className="flex flex-col gap-y-2">
-            <div className="w-full text-sm flex h-6 justify-between items-center">
-              <span className="w-28 font-bold">Môn học:</span>
+          <DialogHeader>
+            <DialogTitle>Thông tin chi tiết môn học</DialogTitle>
+            <DialogDescription className="sr-only">Xem hoặc chỉnh sửa thông tin môn học đã chọn</DialogDescription>
+          </DialogHeader>
+          <div className="pt-2">
+            <InfoRow
+              icon={<BookText size={18} />}
+              label="Môn học"
+              value={
+                <Input
+                  type="text"
+                  className="border w-full h-8 mt-1 text-sm font-semibold"
+                  defaultValue={courseName}
+                  ref={inputRef}
+                  onKeyDown={handleEnterPress}
+                />
+              }
+            />
+            <InfoRow icon={<Hash size={18} />} label="Mã môn" value={courseId} />
+            <InfoRow icon={<Users size={18} />} label="Nhóm lớp" value={groupId} />
+            <InfoRow icon={<User size={18} />} label="Giảng viên" value={teacher} />
+            <InfoRow icon={<MapPin size={18} />} label="Phòng học" value={room} />
+          </div>
+
+          <div className="space-y-2 pt-2">
+            <Label className="text-xs text-muted-foreground flex items-center gap-2">
+              <Palette size={16} /> Màu tùy chỉnh
+            </Label>
+            <div className="flex items-center gap-4">
               <Input
-                type="text"
-                className="border w-full h-6 font-xs"
-                defaultValue={courseName}
-                ref={inputRef}
-                onKeyDown={handleEnterPress}
+                type="color"
+                value={selectedColor}
+                onChange={(e) => setSelectedColor(e.target.value)}
+                className="h-10 w-10 p-1 rounded-md cursor-pointer"
               />
-            </div>
-            <div className="w-full text-sm flex h-6 justify-start items-center">
-              <span className="w-28 font-bold">Mã môn:</span>
-              {courseId}
-            </div>
-            <div className="w-full text-sm flex h-6 justify-start items-center">
-              <span className="w-28 font-bold">Nhóm lớp:</span>
-              {groupId}
-            </div>
-            <div className="w-full text-sm flex h-6 justify-start items-center">
-              <span className="w-28 font-bold">Giảng viên:</span>
-              {teacher}
-            </div>
-            <div className="w-full text-sm flex h-6 justify-start items-center">
-              <span className="w-28 font-bold">Phòng học:</span>
-              {room}
+              <div className="font-mono text-sm p-2 bg-muted rounded-md w-full">{selectedColor.toUpperCase()}</div>
             </div>
           </div>
-          <DialogFooter>
-            <Button onClick={handleSaveChanges} className="w-12 h-8 bg-blue-500 text-white hover:bg-blue-600">
+
+          <DialogFooter className="justify-end flex-row gap-2 sm:gap-0">
+            <Button variant="destructive" onClick={() => setIsAlertOpen(true)} className="h-8 w-16">
+              Xóa
+            </Button>
+            <Button onClick={handleSaveChanges} className="bg-blue-500 text-white hover:bg-blue-600 h-8 w-16">
               Lưu
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Xác nhận xóa</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bạn có chắc chắn muốn xóa môn học "{courseName}" khỏi thời khóa biểu này không?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Hủy</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmRemove}>Xóa</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

@@ -28,6 +28,7 @@ export interface SignedCourse {
   credits?: number;
   groupId: string;
   schedule: GroupSchedule[];
+  color?: string;
 }
 
 export type SignedCourses = SignedCourse[];
