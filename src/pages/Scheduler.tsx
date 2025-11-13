@@ -52,7 +52,7 @@ export const Scheduler = () => {
 
   useEffect(() => {
     if (schedules.length === 0) {
-      addSchedule("Tab mới");
+      addSchedule("tkb_1");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [schedules]);
