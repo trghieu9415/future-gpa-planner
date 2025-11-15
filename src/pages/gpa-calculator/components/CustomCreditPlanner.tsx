@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "./ui/input";
+import { Input } from "../../../components/ui/input";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { HelpCircle } from "lucide-react";
@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "./ui/button";
+import { Button } from "../../../components/ui/button";
 
 interface CustomCreditPlannerProps {
   currentGPA: number;
@@ -33,6 +33,21 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
   const remainingCredits = requiredCredits - accumulatedCredits;
   const totalEnteredCredits = customCredits.a + customCredits.b + customCredits.c + customCredits.d;
   const creditsMatch = totalEnteredCredits === remainingCredits;
+
+  const onFocusInput = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (e.target.value === "0") {
+      e.target.value = "";
+    } else {
+      const input = e.target;
+      input.setSelectionRange(input.value.length, input.value.length);
+    }
+  };
+
+  const onBlurSelect = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (e.target.value === "") {
+      e.target.value = "0";
+    }
+  };
 
   useEffect(() => {
     const currentQualityPoints = currentGPA * accumulatedCredits;
@@ -154,9 +169,10 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                     type="number"
                     min="0"
                     value={customCredits.a}
-                    onFocus={(event) => event.target.select()}
+                    onFocus={(e) => onFocusInput(e)}
+                    onBlur={(e) => onBlurSelect(e)}
                     onChange={(e) => handleCreditChange("a", e.target.value)}
-                    className={cn("w-12 h-8 float-right text-right", rmtx)}
+                    className={cn("w-12 h-8 float-right text-left", rmtx)}
                   />
                 </TableCell>
               </TableRow>
@@ -167,9 +183,10 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                     type="number"
                     min="0"
                     value={customCredits.b}
-                    onFocus={(event) => event.target.select()}
+                    onFocus={(e) => onFocusInput(e)}
+                    onBlur={(e) => onBlurSelect(e)}
                     onChange={(e) => handleCreditChange("b", e.target.value)}
-                    className={cn("w-12 h-8 float-right text-right", rmtx)}
+                    className={cn("w-12 h-8 float-right text-left", rmtx)}
                   />
                 </TableCell>
               </TableRow>
@@ -180,9 +197,10 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                     type="number"
                     min="0"
                     value={customCredits.c}
-                    onFocus={(event) => event.target.select()}
+                    onFocus={(e) => onFocusInput(e)}
+                    onBlur={(e) => onBlurSelect(e)}
                     onChange={(e) => handleCreditChange("c", e.target.value)}
-                    className={cn("w-12 h-8 float-right text-right", rmtx)}
+                    className={cn("w-12 h-8 float-right text-left", rmtx)}
                   />
                 </TableCell>
               </TableRow>
@@ -193,9 +211,10 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                     type="number"
                     min="0"
                     value={customCredits.d}
-                    onFocus={(event) => event.target.select()}
+                    onFocus={(e) => onFocusInput(e)}
+                    onBlur={(e) => onBlurSelect(e)}
                     onChange={(e) => handleCreditChange("d", e.target.value)}
-                    className={cn("w-12 h-8 float-right text-right", rmtx)}
+                    className={cn("w-12 h-8 float-right text-left", rmtx)}
                   />
                 </TableCell>
               </TableRow>
@@ -222,7 +241,6 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                  {/* Nội dung Dialog giữ nguyên */}
                   <div className="flex flex-col space-y-1">
                     <h5 className="font-semibold">Tăng 1 điểm</h5>
                     <p className="text-sm text-muted-foreground">
@@ -272,9 +290,10 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                     type="number"
                     min="0"
                     value={improvementCredits.onePoint}
-                    onFocus={(e) => e.target.select()}
+                    onFocus={(e) => onFocusInput(e)}
+                    onBlur={(e) => onBlurSelect(e)}
                     onChange={(e) => handleImprovementChange("onePoint", e.target.value)}
-                    className={cn("w-12 h-8 float-right text-right", rmtx)}
+                    className={cn("w-12 h-8 float-right text-left", rmtx)}
                   />
                 </TableCell>
               </TableRow>
@@ -285,9 +304,10 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                     type="number"
                     min="0"
                     value={improvementCredits.twoPoints}
-                    onFocus={(e) => e.target.select()}
+                    onFocus={(e) => onFocusInput(e)}
+                    onBlur={(e) => onBlurSelect(e)}
                     onChange={(e) => handleImprovementChange("twoPoints", e.target.value)}
-                    className={cn("w-12 h-8 float-right text-right", rmtx)}
+                    className={cn("w-12 h-8 float-right text-left", rmtx)}
                   />
                 </TableCell>
               </TableRow>
@@ -298,9 +318,10 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                     type="number"
                     min="0"
                     value={improvementCredits.threePoints}
-                    onFocus={(e) => e.target.select()}
+                    onFocus={(e) => onFocusInput(e)}
+                    onBlur={(e) => onBlurSelect(e)}
                     onChange={(e) => handleImprovementChange("threePoints", e.target.value)}
-                    className={cn("w-12 h-8 float-right text-right", rmtx)}
+                    className={cn("w-12 h-8 float-right text-left", rmtx)}
                   />
                 </TableCell>
               </TableRow>

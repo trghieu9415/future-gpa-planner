@@ -1,8 +1,15 @@
 import { SignedCourses } from "@/types/schedule";
 import { CourseBlock } from "./CourseBlock";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../components/ui/select";
 import { getWeekDateRange } from "@/lib/utils";
-import { useScheduleStore } from "@/hooks/useScheduleStore";
+import { useScheduleStore } from "@/components/store/useScheduleStore";
 import { useEffect, useState, forwardRef } from "react";
 
 const daysOfWeek = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];

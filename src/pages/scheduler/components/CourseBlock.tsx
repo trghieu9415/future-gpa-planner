@@ -1,11 +1,18 @@
 import { SignedCourse } from "@/types/schedule";
-import { Card } from "./ui/card";
+import { Card } from "../../../components/ui/card";
 import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
+import { Button } from "../../../components/ui/button";
 import { useRef, useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Input } from "./ui/input";
-import { useScheduleStore } from "@/hooks/useScheduleStore";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../../../components/ui/dialog";
+import { Input } from "../../../components/ui/input";
+import { useScheduleStore } from "@/components/store/useScheduleStore";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,7 +24,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { BookText, Hash, MapPin, Palette, User, Users } from "lucide-react";
-import { Label } from "./ui/label";
+import { Label } from "../../../components/ui/label";
 
 interface CourseBlockProps {
   courseId: string;
@@ -32,16 +39,16 @@ interface CourseBlockProps {
 
 // Bảng màu mặc định (dạng hex) nếu người dùng chưa tùy chỉnh
 const defaultHexPalette: Record<string, string> = {
-  "0": "#fecaca", // rose-300
-  "1": "#d1d5db", // slate-300
-  "2": "#a7f3d0", // emerald-300
-  "3": "#fde68a", // amber-300
-  "4": " #d4d4d8", // zinc-300
-  "5": "#ddd6fe", // violet-300
-  "6": "#facc15", // yellow-400
-  "7": "#bae6fd", // sky-300
-  "8": "#86efac", // green-300
-  "9": "#fed7aa", // orange-300
+  "0": "#e11d48", // rose-600
+  "1": "#475569", // slate-600
+  "2": "#059669", // emerald-600
+  "3": "#d97706", // amber-600
+  "4": "#52525b", // zinc-600
+  "5": "#7c3aed", // violet-600
+  "6": "#ca8a04", // yellow-600
+  "7": "#0284c7", // sky-600
+  "8": "#16a34a", // green-600
+  "9": "#ea580c", // orange-600
 };
 
 // Component con để hiển thị thông tin

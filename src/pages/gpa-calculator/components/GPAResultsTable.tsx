@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Award, Medal, BadgeCheck, Target } from "lucide-react";
 import { calculateRequiredGrades, cn } from "@/lib/utils";
 import { useState } from "react";
-import { Input } from "./ui/input";
+import { Input } from "../../../components/ui/input";
 
 interface GPAResultsTableProps {
   currentGPA: number | null;

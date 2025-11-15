@@ -1,8 +1,8 @@
-import { useScheduleStore } from "@/hooks/useScheduleStore";
+import { useScheduleStore } from "@/components/store/useScheduleStore";
 import { SignedCourses } from "@/types/schedule";
 import { useEffect, useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
-import { Label } from "./ui/label";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";
+import { Label } from "../../../components/ui/label";
 import { Trash2, X } from "lucide-react";
 
 export const SelectedCourses = () => {

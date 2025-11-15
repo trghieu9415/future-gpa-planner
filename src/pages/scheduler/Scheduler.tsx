@@ -1,10 +1,10 @@
-import { CourseSelect } from "@/components/CourseSelect";
-import { ScheduleGrid } from "@/components/ScheduleGrid";
-import { SelectedCourses } from "@/components/SelectedCourses";
-import { TabsChanger } from "@/components/TabsChanger";
+import { CourseSelect } from "@/pages/scheduler/components/CourseSelect";
+import { ScheduleGrid } from "@/pages/scheduler/components/ScheduleGrid";
+import { SelectedCourses } from "@/pages/scheduler/components/SelectedCourses";
+import { TabsChanger } from "@/pages/scheduler/components/TabsChanger";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useScheduleStore } from "@/hooks/useScheduleStore";
+import { useScheduleStore } from "@/components/store/useScheduleStore";
 import { downloadElementScreenshot, getWeekDateRange, jsonToSchedule, scheduleToJson } from "@/lib/utils";
 import { Camera, Import, Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";

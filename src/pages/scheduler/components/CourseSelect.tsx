@@ -1,15 +1,15 @@
 import { getOpenCourseList } from "@/lib/utils";
 import { OpenCourse } from "@/types/schedule";
 import { useEffect, useState } from "react";
-import { Label } from "./ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Label } from "../../../components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ChevronDown, RotateCcw, Search } from "lucide-react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
-import { Checkbox } from "./ui/checkbox";
-import { useScheduleStore } from "@/hooks/useScheduleStore";
+import { Input } from "../../../components/ui/input";
+import { Button } from "../../../components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";
+import { Checkbox } from "../../../components/ui/checkbox";
+import { useScheduleStore } from "@/components/store/useScheduleStore";
 import { toast } from "sonner";
 import React from "react";
 

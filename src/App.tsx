@@ -3,8 +3,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Layout } from "./components/layouts/Layout";
-import { GPACalculator } from "./pages/GPACalculator";
-import { Scheduler } from "./pages/Scheduler";
+import { GPACalculator } from "./pages/gpa-calculator/GPACalculator";
+import { Scheduler } from "./pages/scheduler/Scheduler";
 
 const queryClient = new QueryClient();
 
@@ -18,7 +18,6 @@ const App = () => (
             <Route index element={<Navigate to={"/calculator"} />} />
             <Route path="calculator" element={<GPACalculator />} />
             <Route path="scheduler" element={<Scheduler />} />
-            {/* <Route path="improvement" element={<Improvement />} /> */}
           </Route>
 
           <Route path="*" element={<Navigate to={"/scheduler"} />} />

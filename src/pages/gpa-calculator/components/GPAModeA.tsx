@@ -1,7 +1,7 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAcademicStatus } from "@/hooks/useAcademicStatus";
+import { useAcademicStatus } from "@/components/store/useAcademicStatus";
 
 export const GPAModeA = () => {
   const { currentGPA, setCurrentGPA, accumulatedCredits, setAccumulatedCredits, requiredCredits, setRequiredCredits } =
