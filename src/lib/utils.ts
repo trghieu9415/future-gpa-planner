@@ -4,7 +4,6 @@ import { twMerge } from "tailwind-merge";
 import { OpenCourse, Schedule } from "@/types/schedule";
 import { toPng } from "html-to-image";
 
-const COURSE_LIST_URL = "https://raw.githubusercontent.com/trghieu9415/cauhinh_dns_centos/main/course-list.json";
 const COURSES_SE_URL = "https://raw.githubusercontent.com/trghieu9415/cauhinh_dns_centos/main/courses-se.json";
 
 export function cn(...inputs: ClassValue[]) {

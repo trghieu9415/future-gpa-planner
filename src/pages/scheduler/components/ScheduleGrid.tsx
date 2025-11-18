@@ -33,7 +33,7 @@ export const ScheduleGrid = forwardRef<HTMLDivElement, ScheduleGridProps>(
 
     return (
       <div className="w-full overflow-x-auto" ref={ref}>
-        <div className="min-w-[800px] shadow-lg">
+        <div className="min-w-[800px]">
           {/* Header */}
           <div className="grid grid-cols-7 gap-[0.2rem] mb-[0.2rem]">
             <div className="py-1 border bg-white flex items-center justify-center">

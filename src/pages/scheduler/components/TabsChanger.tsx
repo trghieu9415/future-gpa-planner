@@ -81,7 +81,7 @@ export const TabsChanger = () => {
 
   return (
     <>
-      <div className="w-full grid md:grid-cols-6 grid-cols-3 gap-1 mb-1">
+      <div className="w-full grid md:grid-cols-6 grid-cols-3 gap-1">
         {schedules.length > 0 &&
           schedules.map((schedule) => (
             <div

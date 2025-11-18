@@ -25,44 +25,50 @@ const rmtx =
   "appearance-none [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none ";
 
 export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCredits }: CustomCreditPlannerProps) => {
-  const [customCredits, setCustomCredits] = useState({ a: 0, b: 0, c: 0, d: 0 });
-  const [improvementCredits, setImprovementCredits] = useState({ onePoint: 0, twoPoints: 0, threePoints: 0 });
+  // THAY ĐỔI 1: State bây giờ lưu string để cho phép ô input rỗng tạm thời
+  const [customCredits, setCustomCredits] = useState({ a: "0", b: "0", c: "0", d: "0" });
+  const [improvementCredits, setImprovementCredits] = useState({ onePoint: "0", twoPoints: "0", threePoints: "0" });
+
   const [finalGraduationGPA, setFinalGraduationGPA] = useState<number | null>(null);
   const [newCumulativeInfo, setNewCumulativeInfo] = useState<{ gpa: number; credits: number } | null>(null);
 
+  // Tính toán các giá trị số từ state (string)
+  // Phải thực hiện việc này BÊN NGOÀI useEffect để tính toán cho JSX
+  const creditsA = parseInt(customCredits.a, 10) || 0;
+  const creditsB = parseInt(customCredits.b, 10) || 0;
+  const creditsC = parseInt(customCredits.c, 10) || 0;
+  const creditsD = parseInt(customCredits.d, 10) || 0;
+
   const remainingCredits = requiredCredits - accumulatedCredits;
-  const totalEnteredCredits = customCredits.a + customCredits.b + customCredits.c + customCredits.d;
+  const totalEnteredCredits = creditsA + creditsB + creditsC + creditsD;
   const creditsMatch = totalEnteredCredits === remainingCredits;
 
-  const onFocusInput = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (e.target.value === "0") {
-      e.target.value = "";
-    } else {
-      const input = e.target;
-      input.setSelectionRange(input.value.length, input.value.length);
-    }
-  };
-
-  const onBlurSelect = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (e.target.value === "") {
-      e.target.value = "0";
-    }
-  };
-
   useEffect(() => {
-    const currentQualityPoints = currentGPA * accumulatedCredits;
-    const futureQualityPoints =
-      customCredits.a * 4.0 + customCredits.b * 3.0 + customCredits.c * 2.0 + customCredits.d * 1.0;
-    const improvementPoints =
-      improvementCredits.onePoint * 1.0 + improvementCredits.twoPoints * 2.0 + improvementCredits.threePoints * 3.0;
+    // THAY ĐỔI 2: Parse giá trị từ state (string) sang number để tính toán
+    // Coi chuỗi rỗng "" là 0
+    const numCreditsA = parseInt(customCredits.a, 10) || 0;
+    const numCreditsB = parseInt(customCredits.b, 10) || 0;
+    const numCreditsC = parseInt(customCredits.c, 10) || 0;
+    const numCreditsD = parseInt(customCredits.d, 10) || 0;
 
-    if (totalEnteredCredits > 0 || improvementPoints > 0) {
+    const numImprove1 = parseInt(improvementCredits.onePoint, 10) || 0;
+    const numImprove2 = parseInt(improvementCredits.twoPoints, 10) || 0;
+    const numImprove3 = parseInt(improvementCredits.threePoints, 10) || 0;
+
+    const currentQualityPoints = currentGPA * accumulatedCredits;
+    const futureQualityPoints = numCreditsA * 4.0 + numCreditsB * 3.0 + numCreditsC * 2.0 + numCreditsD * 1.0;
+    const improvementPoints = numImprove1 * 1.0 + numImprove2 * 2.0 + numImprove3 * 3.0;
+
+    const newTotalEnteredCredits = numCreditsA + numCreditsB + numCreditsC + numCreditsD;
+    const newCreditsMatch = newTotalEnteredCredits === remainingCredits;
+
+    if (newTotalEnteredCredits > 0 || improvementPoints > 0) {
       const newTotalQualityPoints = currentQualityPoints + futureQualityPoints + improvementPoints;
-      const newAccumulatedCredits = accumulatedCredits + totalEnteredCredits;
+      const newAccumulatedCredits = accumulatedCredits + newTotalEnteredCredits;
       const newGPA = newAccumulatedCredits > 0 ? newTotalQualityPoints / newAccumulatedCredits : 0;
       setNewCumulativeInfo({ gpa: newGPA, credits: newAccumulatedCredits });
 
-      if (creditsMatch) {
+      if (newCreditsMatch) {
         const calculatedGPA = newTotalQualityPoints / requiredCredits;
         setFinalGraduationGPA(calculatedGPA);
       } else {
@@ -73,29 +79,63 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
       setFinalGraduationGPA(null);
     }
   }, [
-    customCredits,
-    improvementCredits,
-    totalEnteredCredits,
-    creditsMatch,
+    customCredits, // State giờ là object chứa string
+    improvementCredits, // State giờ là object chứa string
     currentGPA,
     accumulatedCredits,
     requiredCredits,
+    remainingCredits, // Thêm dependency này
   ]);
 
+  // THAY ĐỔI 3: onChange chỉ cập nhật string, cho phép số và rỗng
   const handleCreditChange = (grade: "a" | "b" | "c" | "d", value: string) => {
-    const numericValue = parseInt(value, 10);
-    setCustomCredits((prev) => ({
-      ...prev,
-      [grade]: isNaN(numericValue) || numericValue < 0 ? 0 : numericValue,
-    }));
+    if (/^[0-9]*$/.test(value)) {
+      // Chỉ cho phép nhập số (0-9) hoặc rỗng
+      setCustomCredits((prev) => ({
+        ...prev,
+        [grade]: value,
+      }));
+    }
   };
 
   const handleImprovementChange = (type: "onePoint" | "twoPoints" | "threePoints", value: string) => {
-    const numericValue = parseInt(value, 10);
-    setImprovementCredits((prev) => ({
-      ...prev,
-      [type]: isNaN(numericValue) || numericValue < 0 ? 0 : numericValue,
-    }));
+    if (/^[0-9]*$/.test(value)) {
+      setImprovementCredits((prev) => ({
+        ...prev,
+        [type]: value,
+      }));
+    }
+  };
+
+  // THAY ĐỔI 4: onBlur để set giá trị "" về "0" khi người dùng click ra ngoài
+  const handleBlurCredits = (grade: "a" | "b" | "c" | "d") => {
+    if (customCredits[grade] === "") {
+      setCustomCredits((prev) => ({ ...prev, [grade]: "0" }));
+    }
+  };
+
+  const handleBlurImprovement = (type: "onePoint" | "twoPoints" | "threePoints") => {
+    if (improvementCredits[type] === "") {
+      setImprovementCredits((prev) => ({ ...prev, [type]: "0" }));
+    }
+  };
+
+  const handleCreditFocus = (grade: "a" | "b" | "c" | "d", value: string) => {
+    if (value === "0") {
+      setCustomCredits((prev) => ({
+        ...prev,
+        [grade]: "",
+      }));
+    }
+  };
+
+  const handleImprovementFocus = (type: "onePoint" | "twoPoints" | "threePoints", value: string) => {
+    if (value === "0") {
+      setImprovementCredits((prev) => ({
+        ...prev,
+        [type]: "",
+      }));
+    }
   };
 
   return (
@@ -111,6 +151,7 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
         <div className="md:col-span-1">
           <div className="flex items-center gap-2 mb-2">
             <h4 className="font-semibold text-sm">Tín chỉ các môn học mới</h4>
+            {/* ===== DIALOG 1 (Đã khôi phục) ===== */}
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" size="icon" className="h-5 w-5 rounded-full">
@@ -166,12 +207,12 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                 <TableCell className="font-medium">Điểm A (4.0)</TableCell>
                 <TableCell>
                   <Input
-                    type="number"
+                    type="number" // Giữ type="number" để ẩn ký tự chữ
                     min="0"
-                    value={customCredits.a}
-                    onFocus={(e) => onFocusInput(e)}
-                    onBlur={(e) => onBlurSelect(e)}
-                    onChange={(e) => handleCreditChange("a", e.target.value)}
+                    value={customCredits.a} // value từ state (string)
+                    onFocus={(e) => handleCreditFocus("a", e.target.value)}
+                    onBlur={() => handleBlurCredits("a")} // MỚI
+                    onChange={(e) => handleCreditChange("a", e.target.value)} // MỚI
                     className={cn("w-12 h-8 float-right text-left", rmtx)}
                   />
                 </TableCell>
@@ -183,9 +224,9 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                     type="number"
                     min="0"
                     value={customCredits.b}
-                    onFocus={(e) => onFocusInput(e)}
-                    onBlur={(e) => onBlurSelect(e)}
-                    onChange={(e) => handleCreditChange("b", e.target.value)}
+                    onFocus={(e) => handleCreditFocus("b", e.target.value)}
+                    onBlur={() => handleBlurCredits("b")} // MỚI
+                    onChange={(e) => handleCreditChange("b", e.target.value)} // MỚI
                     className={cn("w-12 h-8 float-right text-left", rmtx)}
                   />
                 </TableCell>
@@ -197,9 +238,9 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                     type="number"
                     min="0"
                     value={customCredits.c}
-                    onFocus={(e) => onFocusInput(e)}
-                    onBlur={(e) => onBlurSelect(e)}
-                    onChange={(e) => handleCreditChange("c", e.target.value)}
+                    onFocus={(e) => handleCreditFocus("c", e.target.value)}
+                    onBlur={() => handleBlurCredits("c")} // MỚI
+                    onChange={(e) => handleCreditChange("c", e.target.value)} // MỚI
                     className={cn("w-12 h-8 float-right text-left", rmtx)}
                   />
                 </TableCell>
@@ -211,9 +252,9 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                     type="number"
                     min="0"
                     value={customCredits.d}
-                    onFocus={(e) => onFocusInput(e)}
-                    onBlur={(e) => onBlurSelect(e)}
-                    onChange={(e) => handleCreditChange("d", e.target.value)}
+                    onBlur={() => handleBlurCredits("d")}
+                    onFocus={(e) => handleCreditFocus("d", e.target.value)}
+                    onChange={(e) => handleCreditChange("d", e.target.value)} // MỚI
                     className={cn("w-12 h-8 float-right text-left", rmtx)}
                   />
                 </TableCell>
@@ -226,6 +267,7 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
         <div className="md:col-span-1">
           <div className="flex items-center gap-2 mb-2">
             <h4 className="font-semibold text-sm flex items-center gap-2">Tín chỉ cải thiện</h4>
+            {/* ===== DIALOG 2 (Đã khôi phục) ===== */}
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" size="icon" className="h-5 w-5 rounded-full">
@@ -290,9 +332,9 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                     type="number"
                     min="0"
                     value={improvementCredits.onePoint}
-                    onFocus={(e) => onFocusInput(e)}
-                    onBlur={(e) => onBlurSelect(e)}
-                    onChange={(e) => handleImprovementChange("onePoint", e.target.value)}
+                    onFocus={(e) => handleImprovementFocus("onePoint", e.target.value)}
+                    onBlur={() => handleBlurImprovement("onePoint")} // MỚI
+                    onChange={(e) => handleImprovementChange("onePoint", e.target.value)} // MỚI
                     className={cn("w-12 h-8 float-right text-left", rmtx)}
                   />
                 </TableCell>
@@ -304,9 +346,9 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                     type="number"
                     min="0"
                     value={improvementCredits.twoPoints}
-                    onFocus={(e) => onFocusInput(e)}
-                    onBlur={(e) => onBlurSelect(e)}
-                    onChange={(e) => handleImprovementChange("twoPoints", e.target.value)}
+                    onFocus={(e) => handleImprovementFocus("twoPoints", e.target.value)}
+                    onBlur={() => handleBlurImprovement("twoPoints")} // MỚI
+                    onChange={(e) => handleImprovementChange("twoPoints", e.target.value)} // MỚI
                     className={cn("w-12 h-8 float-right text-left", rmtx)}
                   />
                 </TableCell>
@@ -318,9 +360,9 @@ export const CustomCreditPlanner = ({ currentGPA, accumulatedCredits, requiredCr
                     type="number"
                     min="0"
                     value={improvementCredits.threePoints}
-                    onFocus={(e) => onFocusInput(e)}
-                    onBlur={(e) => onBlurSelect(e)}
-                    onChange={(e) => handleImprovementChange("threePoints", e.target.value)}
+                    onFocus={(e) => handleImprovementFocus("threePoints", e.target.value)}
+                    onBlur={() => handleBlurImprovement("threePoints")} // MỚI
+                    onChange={(e) => handleImprovementChange("threePoints", e.target.value)} // MỚI
                     className={cn("w-12 h-8 float-right text-left", rmtx)}
                   />
                 </TableCell>

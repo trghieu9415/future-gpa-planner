@@ -3,21 +3,20 @@ import { OpenCourse } from "@/types/schedule";
 import { useEffect, useState } from "react";
 import { Label } from "../../../components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { ChevronDown, RotateCcw, Search } from "lucide-react";
-import { Input } from "../../../components/ui/input";
+import { ChevronDown, RotateCcw } from "lucide-react"; // Search đã được tích hợp trong CommandInput
 import { Button } from "../../../components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";
 import { Checkbox } from "../../../components/ui/checkbox";
 import { useScheduleStore } from "@/components/store/useScheduleStore";
 import { toast } from "sonner";
 import React from "react";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"; // <-- THÊM MỚI
 
 export const CourseSelect = () => {
   const [courses, setCourses] = useState<OpenCourse[]>([]);
-  const [openCourses, setOpenCourses] = useState<OpenCourse[]>([]);
-  const [selectedOpenCourse, setSelectedOpenCourse] = useState<OpenCourse>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  // const [openCourses, setOpenCourses] = useState<OpenCourse[]>([]); // <-- XÓA BỎ
+  const [selectedOpenCourse, setSelectedOpenCourse] = useState<OpenCourse | null>(null); // <-- SỬA (Thêm | null)
+  // const [searchQuery, setSearchQuery] = useState(""); // <-- XÓA BỎ
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   const { getActivatedSchedule, toggleSign } = useScheduleStore();
@@ -27,7 +26,7 @@ export const CourseSelect = () => {
       try {
         const list = await getOpenCourseList();
         setCourses(list);
-        setOpenCourses(list);
+        // setOpenCourses(list); // <-- XÓA BỎ
       } catch (error) {
         console.error("Failed to fetch courses:", error);
       }
@@ -36,26 +35,14 @@ export const CourseSelect = () => {
     fetchCourses();
   }, []);
 
-  useEffect(() => {
-    if (courses) {
-      if (searchQuery) {
-        const lower = searchQuery.toLowerCase();
-        const filteredCourses = courses.filter(
-          (course) => course.name.toLowerCase().includes(lower) || course.courseId.toLowerCase().includes(lower)
-        );
-        setOpenCourses(filteredCourses);
-      } else {
-        setOpenCourses(courses);
-      }
-    }
-  }, [searchQuery, courses]);
+  // <-- XÓA BỎ HOÀN TOÀN useEffect LỌC MÔN HỌC (Command sẽ làm)
 
   const handleCourseSelect = (checked: boolean, course: OpenCourse, groupId: string) => {
     if (checked) {
       try {
         getActivatedSchedule().addCourse(course, groupId);
       } catch (error) {
-        toast.error(error.message);
+        toast.error((error as Error).message); // <-- Sửa nhỏ: ép kiểu error
       }
     } else {
       getActivatedSchedule().removeCourse(course.courseId);
@@ -85,46 +72,48 @@ export const CourseSelect = () => {
               </Button>
             </PopoverTrigger>
 
+            {/* v v v THAY ĐỔI NỘI DUNG POPOVER v v v */}
             <PopoverContent className="md:w-96 w-80 p-0">
-              <div className="p-3 border-b">
-                <h3 className="font-bold text-foreground">Danh sách môn học</h3>
-              </div>
-
-              <div className="p-3 border-b">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Tìm kiếm môn học, mã HP"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9"
-                  />
+              <Command>
+                <div className="p-3 border-b">
+                  <h3 className="font-bold text-foreground">Danh sách môn học</h3>
                 </div>
-              </div>
 
-              <ScrollArea className="h-52 md:w-96 w-80 overflow-auto">
-                <div className="p-2">
-                  {openCourses.map((openCourse) => (
-                    <div
-                      key={openCourse.courseId}
-                      className="flex items-center space-x-2 rounded-sm px-3 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
-                      onClick={() => {
-                        setSelectedOpenCourse(openCourse);
-                        setPopoverOpen(false);
-                      }}
-                    >
-                      <div className="flex-1">
-                        <div className="font-bold">{openCourse.name}</div>
-                        <div className="text-xs mt-1 ">
-                          <span className="font-semibold italic">Mã: </span>
-                          {openCourse.courseId}
+                <div className="p-3 border-b">
+                  {/* CommandInput đã tích hợp sẵn icon Search và logic lọc */}
+                  <CommandInput placeholder="Tìm kiếm môn học, mã HP" />
+                </div>
+
+                <CommandEmpty>Không tìm thấy môn học.</CommandEmpty>
+
+                <CommandList className="h-52 md:w-96 w-80 overflow-auto">
+                  <CommandGroup>
+                    {courses.map((openCourse) => (
+                      <CommandItem
+                        key={openCourse.courseId}
+                        // value là giá trị để CommandInput lọc
+                        value={`${openCourse.name} ${openCourse.courseId}`}
+                        // onSelect sẽ được gọi khi Enter hoặc Click
+                        onSelect={() => {
+                          setSelectedOpenCourse(openCourse);
+                          setPopoverOpen(false);
+                        }}
+                      >
+                        {/* Giữ nguyên cấu trúc hiển thị của bạn */}
+                        <div className="flex-1">
+                          <div className="font-bold">{openCourse.name}</div>
+                          <div className="text-xs mt-1 ">
+                            <span className="font-semibold italic">Mã: </span>
+                            {openCourse.courseId}
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
             </PopoverContent>
+            {/* ^ ^ ^ KẾT THÚC THAY ĐỔI ^ ^ ^ */}
           </Popover>
           <Button variant="outline" className="size-8" onClick={() => setSelectedOpenCourse(null)}>
             <RotateCcw className="size-4" />
@@ -142,7 +131,7 @@ export const CourseSelect = () => {
                 <TableHead className="whitespace-nowrap px-2 py-1.5 text-center">Tên môn</TableHead>
                 <TableHead className="whitespace-nowrap px-2 py-1.5 text-center">Số TC</TableHead>
                 <TableHead className="whitespace-nowrap px-2 py-1.5 text-center">Nhóm</TableHead>
-                <TableHead className="whitespace-nowrap px-2 py-1.5 text-center">Sĩ số</TableHead>
+                <TableHead className="whitespace-nowrap px-2 py-1.5 text-center">SLCL</TableHead>
                 <TableHead className="whitespace-nowrap px-2 py-1.5 text-center">Giảng viên</TableHead>
                 <TableHead className="whitespace-nowrap px-2 py-1.5 text-center">Thứ</TableHead>
                 <TableHead className="whitespace-nowrap px-2 py-1.5 text-center">Tiết BĐ</TableHead>
@@ -205,7 +194,7 @@ export const CourseSelect = () => {
                     </TableRow>
                     {group.schedule.slice(1).map((scheduleItem, index) => (
                       <TableRow
-                        key={`${selectedOpenCourse.courseId}${group.groupId}-${index}`}
+                        key={`${selectedOpenCourse.courseId}${group.groupId}-${index}`} // Sửa: index + 1 để key không bị trùng
                         className="divide-x divide-border"
                       >
                         <TableCell className="whitespace-nowrap px-2 py-1.5 text-start">
@@ -230,7 +219,8 @@ export const CourseSelect = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={10} className="text-center text-muted-foreground">
+                  <TableCell colSpan={12} className="text-center text-muted-foreground">
+                    {/* Sửa: colSpan thành 12 để khớp số cột */}
                     Không có nhóm tổ nào
                   </TableCell>
                 </TableRow>

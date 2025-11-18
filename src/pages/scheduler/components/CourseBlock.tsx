@@ -13,16 +13,6 @@ import {
 } from "../../../components/ui/dialog";
 import { Input } from "../../../components/ui/input";
 import { useScheduleStore } from "@/components/store/useScheduleStore";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { BookText, Hash, MapPin, Palette, User, Users } from "lucide-react";
 import { Label } from "../../../components/ui/label";
 
@@ -73,7 +63,6 @@ export const CourseBlock = ({
   gridColumn,
 }: CourseBlockProps) => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   // State giờ sẽ lưu mã màu hex
   const [selectedColor, setSelectedColor] = useState(
@@ -110,11 +99,12 @@ export const CourseBlock = ({
     else if (e.key === "Escape") setEditDialogOpen(false);
   };
 
-  const handleConfirmRemove = () => {
+  const handleConfirmRemove = async () => {
     getActivatedSchedule()?.removeCourse(signedCourse.courseId);
-    toggleSign();
+    setTimeout(() => {
+      toggleSign();
+    }, 50);
     setEditDialogOpen(false);
-    setIsAlertOpen(false);
   };
 
   // Lấy màu cuối cùng để hiển thị (ưu tiên màu tùy chỉnh)
@@ -193,7 +183,7 @@ export const CourseBlock = ({
           </div>
 
           <DialogFooter className="justify-end flex-row gap-2 sm:gap-0">
-            <Button variant="destructive" onClick={() => setIsAlertOpen(true)} className="h-8 w-16">
+            <Button variant="destructive" onClick={() => handleConfirmRemove()} className="h-8 w-16">
               Xóa
             </Button>
             <Button onClick={handleSaveChanges} className="bg-blue-500 text-white hover:bg-blue-600 h-8 w-16">
@@ -202,21 +192,6 @@ export const CourseBlock = ({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Xác nhận xóa</AlertDialogTitle>
-            <AlertDialogDescription>
-              Bạn có chắc chắn muốn xóa môn học "{courseName}" khỏi thời khóa biểu này không?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Hủy</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmRemove}>Xóa</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 };
