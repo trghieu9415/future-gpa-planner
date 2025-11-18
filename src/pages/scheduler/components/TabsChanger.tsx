@@ -33,6 +33,13 @@ export const TabsChanger = () => {
     }
   }, [editingTabId]);
 
+  useEffect(() => {
+    if (!getActivatedSchedule()) {
+      addSchedule(`tkb_1`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleTabDoubleClick = (e: React.MouseEvent<HTMLDivElement>, tabId: string, currentName: string) => {
     e.currentTarget.focus();
     setEditingTabId(tabId);

@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 
 export interface OpenCourse {
@@ -69,16 +70,42 @@ export class Schedule {
           if (isConflict) {
             throw new Error(`"${course.name}" trùng với lịch học "${signed.courseName}"`);
           }
-          const hasCampusConflict = signed.schedule.some(
-            (item) =>
-              item.dayOfWeek === newItem.dayOfWeek &&
-              item.room[0] !== newItem.room[0] &&
-              item.studyWeeks.some((w) => newItem.studyWeeks.includes(w)) &&
-              (item.startPeriod + item.periodCount === newItem.startPeriod ||
-                newItem.startPeriod + newItem.periodCount === item.startPeriod) &&
-              ![6, 10].includes(newItem.startPeriod) &&
-              ![6, 10].includes(item.startPeriod)
-          );
+          const hasCampusConflict = signed.schedule.some((item) => {
+            if (
+              item.dayOfWeek !== newItem.dayOfWeek ||
+              item.room[0] === newItem.room[0] ||
+              !item.studyWeeks.some((w) => newItem.studyWeeks.includes(w))
+            ) {
+              return false;
+            }
+
+            const campusWarningWeek: number[] = item.studyWeeks.filter((w) => newItem.studyWeeks.includes(w));
+            const campusWarningWeeksStr = campusWarningWeek.join(", ");
+
+            if (item.startPeriod == 1 && item.periodCount == 2 && newItem.startPeriod == 3) {
+              toast.warning(
+                `Lưu ý: Bạn chỉ có 20 phút để di chuyển giữa hai cơ sở của môn "${signed.courseName}" và "${course.name}" vào các tuần ${campusWarningWeeksStr}.`
+              );
+              return false;
+            }
+
+            if (newItem.startPeriod == 1 && newItem.periodCount == 2 && item.startPeriod == 3) {
+              toast.warning(
+                `Lưu ý: Bạn chỉ có 20 phút để di chuyển giữa hai cơ sở của môn "${course.name}" và "${signed.courseName}" vào các tuần ${campusWarningWeeksStr}.`
+              );
+              return false;
+            }
+
+            if (item.startPeriod + item.periodCount === newItem.startPeriod) {
+              return ![6, 10].includes(newItem.startPeriod);
+            }
+
+            if (newItem.startPeriod + newItem.periodCount === item.startPeriod) {
+              return ![6, 10].includes(item.startPeriod);
+            }
+
+            return false;
+          });
           if (hasCampusConflict) {
             throw new Error(
               `"${course.name}" và "${signed.courseName}" không thể đăng ký do khác cơ sở học trong cùng một buổi`

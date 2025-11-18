@@ -3,20 +3,28 @@ import { OpenCourse } from "@/types/schedule";
 import { useEffect, useState } from "react";
 import { Label } from "../../../components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover";
-import { ChevronDown, RotateCcw } from "lucide-react"; // Search đã được tích hợp trong CommandInput
+import { ChevronDown, RotateCcw } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";
 import { Checkbox } from "../../../components/ui/checkbox";
 import { useScheduleStore } from "@/components/store/useScheduleStore";
 import { toast } from "sonner";
 import React from "react";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"; // <-- THÊM MỚI
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList, // <-- SỬA 1: THÊM COMMANDLIST
+} from "@/components/ui/command";
+
+// Bỏ import ScrollArea vì CommandList đã tích hợp
+// import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const CourseSelect = () => {
   const [courses, setCourses] = useState<OpenCourse[]>([]);
-  // const [openCourses, setOpenCourses] = useState<OpenCourse[]>([]); // <-- XÓA BỎ
-  const [selectedOpenCourse, setSelectedOpenCourse] = useState<OpenCourse | null>(null); // <-- SỬA (Thêm | null)
-  // const [searchQuery, setSearchQuery] = useState(""); // <-- XÓA BỎ
+  const [selectedOpenCourse, setSelectedOpenCourse] = useState<OpenCourse | null>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   const { getActivatedSchedule, toggleSign } = useScheduleStore();
@@ -26,7 +34,6 @@ export const CourseSelect = () => {
       try {
         const list = await getOpenCourseList();
         setCourses(list);
-        // setOpenCourses(list); // <-- XÓA BỎ
       } catch (error) {
         console.error("Failed to fetch courses:", error);
       }
@@ -35,17 +42,23 @@ export const CourseSelect = () => {
     fetchCourses();
   }, []);
 
-  // <-- XÓA BỎ HOÀN TOÀN useEffect LỌC MÔN HỌC (Command sẽ làm)
-
   const handleCourseSelect = (checked: boolean, course: OpenCourse, groupId: string) => {
+    // <-- SỬA 2: THÊM KIỂM TRA SCHEDULE
+    const schedule = getActivatedSchedule();
+    if (!schedule) {
+      toast.error("Chưa có thời khóa biểu nào được kích hoạt. Vui lòng tạo TKB mới.");
+      return; // Dừng hàm
+    }
+    // KẾT THÚC SỬA 2
+
     if (checked) {
       try {
-        getActivatedSchedule().addCourse(course, groupId);
+        schedule.addCourse(course, groupId); // Dùng 'schedule'
       } catch (error) {
-        toast.error((error as Error).message); // <-- Sửa nhỏ: ép kiểu error
+        toast.error((error as Error).message);
       }
     } else {
-      getActivatedSchedule().removeCourse(course.courseId);
+      schedule.removeCourse(course.courseId); // Dùng 'schedule'
     }
     toggleSign();
   };
@@ -72,7 +85,6 @@ export const CourseSelect = () => {
               </Button>
             </PopoverTrigger>
 
-            {/* v v v THAY ĐỔI NỘI DUNG POPOVER v v v */}
             <PopoverContent className="md:w-96 w-80 p-0">
               <Command>
                 <div className="p-3 border-b">
@@ -80,26 +92,23 @@ export const CourseSelect = () => {
                 </div>
 
                 <div className="p-3 border-b">
-                  {/* CommandInput đã tích hợp sẵn icon Search và logic lọc */}
                   <CommandInput placeholder="Tìm kiếm môn học, mã HP" />
                 </div>
 
                 <CommandEmpty>Không tìm thấy môn học.</CommandEmpty>
 
+                {/* <-- SỬA 3: THAY <ScrollArea> BẰNG <CommandList> --> */}
                 <CommandList className="h-52 md:w-96 w-80 overflow-auto">
                   <CommandGroup>
                     {courses.map((openCourse) => (
                       <CommandItem
                         key={openCourse.courseId}
-                        // value là giá trị để CommandInput lọc
                         value={`${openCourse.name} ${openCourse.courseId}`}
-                        // onSelect sẽ được gọi khi Enter hoặc Click
                         onSelect={() => {
                           setSelectedOpenCourse(openCourse);
                           setPopoverOpen(false);
                         }}
                       >
-                        {/* Giữ nguyên cấu trúc hiển thị của bạn */}
                         <div className="flex-1">
                           <div className="font-bold">{openCourse.name}</div>
                           <div className="text-xs mt-1 ">
@@ -111,9 +120,9 @@ export const CourseSelect = () => {
                     ))}
                   </CommandGroup>
                 </CommandList>
+                {/* <-- KẾT THÚC SỬA 3 --> */}
               </Command>
             </PopoverContent>
-            {/* ^ ^ ^ KẾT THÚC THAY ĐỔI ^ ^ ^ */}
           </Popover>
           <Button variant="outline" className="size-8" onClick={() => setSelectedOpenCourse(null)}>
             <RotateCcw className="size-4" />
@@ -151,7 +160,12 @@ export const CourseSelect = () => {
                       <TableCell rowSpan={group.schedule.length} className="!px-2">
                         <div className="w-full flex justify-center items-center">
                           <Checkbox
-                            checked={getActivatedSchedule().hasCourseGroup(selectedOpenCourse.courseId, group.groupId)}
+                            // <-- SỬA 4: THÊM OPTIONAL CHAINING VÀ NULL COALESCING -->
+                            checked={
+                              getActivatedSchedule()?.hasCourseGroup(selectedOpenCourse.courseId, group.groupId) ??
+                              false
+                            }
+                            // <-- KẾT THÚC SỬA 4 -->
                             onCheckedChange={(checked) =>
                               handleCourseSelect(checked === true, selectedOpenCourse, group.groupId)
                             }
@@ -194,7 +208,7 @@ export const CourseSelect = () => {
                     </TableRow>
                     {group.schedule.slice(1).map((scheduleItem, index) => (
                       <TableRow
-                        key={`${selectedOpenCourse.courseId}${group.groupId}-${index}`} // Sửa: index + 1 để key không bị trùng
+                        key={`${selectedOpenCourse.courseId}${group.groupId}-${index + 1}`} // Sửa nhỏ: index -> index + 1
                         className="divide-x divide-border"
                       >
                         <TableCell className="whitespace-nowrap px-2 py-1.5 text-start">
@@ -220,7 +234,6 @@ export const CourseSelect = () => {
               ) : (
                 <TableRow>
                   <TableCell colSpan={12} className="text-center text-muted-foreground">
-                    {/* Sửa: colSpan thành 12 để khớp số cột */}
                     Không có nhóm tổ nào
                   </TableCell>
                 </TableRow>

@@ -62,7 +62,7 @@ export const TabBar = ({ scheduleRef }: Props) => {
   return (
     <div className="flex flex-col-reverse md:flex-row gap-4 justify-between items-center">
       <TabsChanger />
-      <div className="flex gap-2">
+      <div className="flex gap-1">
         <Button variant="outline" size="icon" className="mb-1" onClick={handleDownloadScreenshot}>
           <Camera className="size-4" />
         </Button>
