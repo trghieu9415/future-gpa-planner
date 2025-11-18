@@ -1,6 +1,5 @@
-import { getOpenCourseList } from "@/lib/utils";
 import { OpenCourse } from "@/types/schedule";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Label } from "../../../components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover";
 import { ChevronDown, RotateCcw } from "lucide-react";
@@ -10,22 +9,62 @@ import { Checkbox } from "../../../components/ui/checkbox";
 import { useScheduleStore } from "@/components/store/useScheduleStore";
 import { toast } from "sonner";
 import React from "react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList, // <-- SỬA 1: THÊM COMMANDLIST
-} from "@/components/ui/command";
-
-// Bỏ import ScrollArea vì CommandList đã tích hợp
-// import { ScrollArea } from "@/components/ui/scroll-area";
+import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { getOpenCourseList } from "@/utils/u-fetch";
+import { getAcronym, parseSearchQuery, removeVietnameseTones } from "@/utils/u-query";
 
 export const CourseSelect = () => {
   const [courses, setCourses] = useState<OpenCourse[]>([]);
   const [selectedOpenCourse, setSelectedOpenCourse] = useState<OpenCourse | null>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+
+  const filteredCourses = useMemo(() => {
+    if (!inputValue || inputValue.trim() === "") return courses;
+
+    const conditions = parseSearchQuery(inputValue);
+
+    return courses.filter((course) => {
+      if (conditions.credits !== null && course.credits !== conditions.credits) {
+        return false;
+      }
+
+      if (conditions.faculty) {
+        const searchKey = removeVietnameseTones(conditions.faculty);
+
+        const match = course.faculty.some((f) => {
+          const facultyNameValues = removeVietnameseTones(f);
+          const facultyAcronym = getAcronym(f);
+
+          return facultyNameValues.includes(searchKey) || facultyAcronym === searchKey;
+        });
+
+        if (!match) return false;
+      }
+      if (conditions.teacher) {
+        const searchKey = removeVietnameseTones(conditions.teacher);
+
+        const hasTeacher = course.groups.some((group) =>
+          group.schedule.some((sched) => {
+            const teacherName = sched.teacher;
+            const normalizedName = removeVietnameseTones(teacherName);
+            const acronym = getAcronym(teacherName);
+            return normalizedName.includes(searchKey) || acronym.includes(searchKey);
+          })
+        );
+
+        if (!hasTeacher) return false;
+      }
+
+      if (conditions.text) {
+        const matchId = course.courseId.toLowerCase().includes(conditions.text);
+        const matchName = course.name.toLowerCase().includes(conditions.text);
+        if (!matchId && !matchName) return false;
+      }
+
+      return true;
+    });
+  }, [inputValue, courses]);
 
   const { getActivatedSchedule, toggleSign } = useScheduleStore();
 
@@ -86,24 +125,25 @@ export const CourseSelect = () => {
             </PopoverTrigger>
 
             <PopoverContent className="md:w-96 w-80 p-0">
-              <Command>
+              <Command shouldFilter={false}>
                 <div className="p-3 border-b">
                   <h3 className="font-bold text-foreground">Danh sách môn học</h3>
                 </div>
 
                 <div className="p-3 border-b">
-                  <CommandInput placeholder="Tìm kiếm môn học, mã HP" />
+                  <CommandInput
+                    placeholder="Tìm kiếm môn học, mã HP"
+                    value={inputValue}
+                    onValueChange={setInputValue}
+                  />
                 </div>
 
-                <CommandEmpty>Không tìm thấy môn học.</CommandEmpty>
-
-                {/* <-- SỬA 3: THAY <ScrollArea> BẰNG <CommandList> --> */}
                 <CommandList className="h-52 md:w-96 w-80 overflow-auto">
-                  <CommandGroup>
-                    {courses.map((openCourse) => (
+                  <CommandGroup heading={`Tìm thấy ${filteredCourses.length} môn học`}>
+                    {filteredCourses.map((openCourse) => (
                       <CommandItem
                         key={openCourse.courseId}
-                        value={`${openCourse.name} ${openCourse.courseId}`}
+                        value={`${openCourse.name} (${openCourse.courseId})`}
                         onSelect={() => {
                           setSelectedOpenCourse(openCourse);
                           setPopoverOpen(false);
@@ -114,6 +154,8 @@ export const CourseSelect = () => {
                           <div className="text-xs mt-1 ">
                             <span className="font-semibold italic">Mã: </span>
                             {openCourse.courseId}
+                            <span className="font-semibold italic"> - Số TC: </span>
+                            {openCourse.credits}
                           </div>
                         </div>
                       </CommandItem>

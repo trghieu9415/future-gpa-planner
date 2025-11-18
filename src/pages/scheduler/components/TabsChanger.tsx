@@ -35,7 +35,7 @@ export const TabsChanger = () => {
 
   useEffect(() => {
     if (!getActivatedSchedule()) {
-      addSchedule(`tkb_1`);
+      addSchedule(`TKB_1`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -127,7 +127,7 @@ export const TabsChanger = () => {
           <Button
             variant="link"
             className="h-8 w-8 border-none group text-gray-500 hover:text-gray-700"
-            onClick={() => addSchedule(`tkb_${schedules.length + 1}`)}
+            onClick={() => addSchedule(`TKB_${schedules.length + 1}`)}
           >
             <Plus className="size-4" />
           </Button>

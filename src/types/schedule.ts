@@ -5,6 +5,7 @@ export interface OpenCourse {
   courseId: string;
   name: string;
   credits: number;
+  faculty: string[];
   groups: CourseGroup[];
 }
 
@@ -82,16 +83,14 @@ export class Schedule {
             const campusWarningWeek: number[] = item.studyWeeks.filter((w) => newItem.studyWeeks.includes(w));
             const campusWarningWeeksStr = campusWarningWeek.join(", ");
 
-            if (item.startPeriod == 1 && item.periodCount == 2 && newItem.startPeriod == 3) {
+            const thisEnd2NewStart3 = item.startPeriod == 1 && item.periodCount == 2 && newItem.startPeriod == 3;
+            const newEnd2ThisStart3 = newItem.startPeriod == 1 && newItem.periodCount == 2 && item.startPeriod == 3;
+            const thisEnd7NewStart8 = item.startPeriod == 6 && item.periodCount == 2 && newItem.startPeriod == 8;
+            const newEnd7ThisStart8 = newItem.startPeriod == 6 && newItem.periodCount == 2 && item.startPeriod == 8;
+
+            if (thisEnd2NewStart3 || newEnd2ThisStart3 || thisEnd7NewStart8 || newEnd7ThisStart8) {
               toast.warning(
                 `Lưu ý: Bạn chỉ có 20 phút để di chuyển giữa hai cơ sở của môn "${signed.courseName}" và "${course.name}" vào các tuần ${campusWarningWeeksStr}.`
-              );
-              return false;
-            }
-
-            if (newItem.startPeriod == 1 && newItem.periodCount == 2 && item.startPeriod == 3) {
-              toast.warning(
-                `Lưu ý: Bạn chỉ có 20 phút để di chuyển giữa hai cơ sở của môn "${course.name}" và "${signed.courseName}" vào các tuần ${campusWarningWeeksStr}.`
               );
               return false;
             }

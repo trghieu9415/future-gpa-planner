@@ -8,9 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select";
-import { getWeekDateRange } from "@/lib/utils";
 import { useScheduleStore } from "@/components/store/useScheduleStore";
 import { useEffect, useState, forwardRef } from "react";
+import { getWeekDateRange } from "@/utils/u-math";
 
 const daysOfWeek = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"];
 const periods = [1, 2, 3, 4, 5, "Trưa", 6, 7, 8, 9, 10, "Tối", 11, 12, 13];

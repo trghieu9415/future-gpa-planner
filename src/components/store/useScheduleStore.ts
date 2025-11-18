@@ -36,7 +36,7 @@ export const useScheduleStore = create(
           const isRemovedActive = state.activatedScheduleId === scheduleId;
 
           if (filtered.length === 0) {
-            const schedule = new Schedule("tkb_1");
+            const schedule = new Schedule("TKB_1");
             return { schedules: [schedule], activatedScheduleId: schedule.id, sign: !get().sign };
           }
 

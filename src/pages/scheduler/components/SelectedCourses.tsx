@@ -5,8 +5,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Label } from "../../../components/ui/label";
 import { Trash2, X } from "lucide-react";
 
-// MỚI: Import các component Tooltip từ shadcn/ui
-// Hãy chắc chắn đường dẫn import này khớp với cấu trúc dự án của bạn
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 

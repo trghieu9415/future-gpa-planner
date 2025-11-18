@@ -5,4 +5,4 @@ export const getOpenCourseList = async (): Promise<OpenCourse[]> => {
   return courses;
 };
 
-const COURSES_SE_URL = "https://raw.githubusercontent.com/trghieu9415/cauhinh_dns_centos/main/courses-se.json";
+const COURSES_SE_URL = "https://raw.githubusercontent.com/trghieu9415/cauhinh_dns_centos/main/ok.json";

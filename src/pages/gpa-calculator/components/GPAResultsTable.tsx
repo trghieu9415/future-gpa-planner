@@ -2,9 +2,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Award, Medal, BadgeCheck, Target } from "lucide-react";
-import { calculateRequiredGrades, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Input } from "../../../components/ui/input";
+import { calculateRequiredGrades } from "@/utils/u-math";
 
 interface GPAResultsTableProps {
   currentGPA: number | null;
