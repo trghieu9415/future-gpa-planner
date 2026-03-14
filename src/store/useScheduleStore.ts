@@ -53,9 +53,8 @@ export const useScheduleStore = create(
       toggleSign: () => set((state) => ({ sign: !state.sign })),
     }),
     {
-      name: "schedule-storage", // Tên key trong localStorage
+      name: "schedule-storage",
       storage: createJSONStorage(() => localStorage, {
-        // Hàm reviver để chuyển đổi đối tượng JSON thô thành instance của lớp Schedule
         reviver: (key, value) => {
           if (key === "schedules" && Array.isArray(value)) {
             return value.map((s) => {

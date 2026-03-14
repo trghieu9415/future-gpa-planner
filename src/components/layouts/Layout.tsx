@@ -19,7 +19,6 @@ const pageInfoMap: Record<string, { title: string; description: string }> = {
     description: "Tổ chức và xem lịch học của bạn một cách trực quan.",
   },
   default: {
-    // Thêm một mục default để tránh lỗi khi pageInfo không tồn tại
     title: "Công cụ học tập",
     description: "Lựa chọn một chức năng bên dưới để bắt đầu.",
   },
@@ -29,7 +28,6 @@ const gradient = "from-[#3472ef] to-[#16a14b]";
 
 export const Layout = () => {
   const location = useLocation();
-  // Lấy thông tin trang, nếu không có sẽ dùng default
   const pageInfo = pageInfoMap[location.pathname] || pageInfoMap.default;
 
   return (
@@ -37,7 +35,6 @@ export const Layout = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8" key={location.pathname}>
           {" "}
-          {/* <-- THÊM KEY ĐỂ KÍCH HOẠT LẠI ANIMATION */}
           <div className="flex items-center justify-center gap-4 mb-4">
             <div className="p-3 bg-primary/10 rounded-full hidden sm:block">
               <GraduationCap className="h-8 w-8 text-[#3472ef]" />
@@ -45,7 +42,7 @@ export const Layout = () => {
             <h1
               className={cn(
                 "text-4xl font-bold bg-gradient-to-r flex h-20 items-center bg-clip-text text-transparent",
-                "animate-in fade-in-50  duration-700", // <-- THÊM HIỆU ỨNG
+                "animate-in fade-in-50  duration-700",
                 gradient
               )}
             >

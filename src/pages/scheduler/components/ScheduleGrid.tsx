@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select";
-import { useScheduleStore } from "@/components/store/useScheduleStore";
+import { useScheduleStore } from "@/store/useScheduleStore";
 import { useEffect, useState, forwardRef } from "react";
 import { getWeekDateRange } from "@/utils/u-math";
 

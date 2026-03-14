@@ -1,4 +1,4 @@
-import { useScheduleStore } from "@/components/store/useScheduleStore";
+import { useScheduleStore } from "@/store/useScheduleStore";
 import { SignedCourses } from "@/types/schedule";
 import { useEffect, useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";

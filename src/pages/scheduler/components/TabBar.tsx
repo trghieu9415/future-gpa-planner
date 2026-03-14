@@ -1,7 +1,7 @@
 import { Label } from "@radix-ui/react-label";
 import { Camera, Copy, Download, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useScheduleStore } from "@/components/store/useScheduleStore";
+import { useScheduleStore } from "@/store/useScheduleStore";
 import { ChangeEvent } from "react";
 import { toast } from "sonner";
 import { copyElementScreenshot, downloadElementScreenshot, jsonToSchedule, scheduleToJson } from "@/utils/u-file";

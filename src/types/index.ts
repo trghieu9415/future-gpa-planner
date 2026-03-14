@@ -22,12 +22,12 @@ export interface TargetCredits {
   b: number;
   c: number;
   d: number;
-  finalGPA: number;
+  finalGpa: number;
 }
 
-export interface GPAModeProps {
-  currentGPA: number | null;
-  setCurrentGPA: (value: number | null) => void;
+export interface GpaModeProps {
+  currentGpa: number | null;
+  setCurrentGpa: (value: number | null) => void;
   accumulatedCredits: number | null;
   setAccumulatedCredits: (value: number | null) => void;
   requiredCredits: number | null;

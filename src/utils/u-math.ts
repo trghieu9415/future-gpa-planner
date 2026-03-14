@@ -1,45 +1,45 @@
 import { TargetCredits } from "@/types";
 
 export const calculateRequiredGrades = (
-  currentGPA: number,
+  currentGpa: number,
   accumulatedCredits: number,
   requiredCredits: number,
-  targetGPA: number
+  targetGpa: number
 ): TargetCredits => {
-  const currentQualityPoints = currentGPA * accumulatedCredits;
+  const currentQualityPoints = currentGpa * accumulatedCredits;
   const remainingCredits = requiredCredits - accumulatedCredits;
 
   if (remainingCredits <= 0) {
-    return { a: 0, b: 0, c: 0, d: 0, finalGPA: currentGPA };
+    return { a: 0, b: 0, c: 0, d: 0, finalGpa: currentGpa };
   }
 
   const minPossiblePoints = currentQualityPoints + remainingCredits * 1.0;
   const maxPossiblePoints = currentQualityPoints + remainingCredits * 4.0;
 
-  const minPossibleGPA = minPossiblePoints / requiredCredits;
-  const maxPossibleGPA = maxPossiblePoints / requiredCredits;
+  const minPossibleGpa = minPossiblePoints / requiredCredits;
+  const maxPossibleGpa = maxPossiblePoints / requiredCredits;
 
-  if (targetGPA > maxPossibleGPA) {
+  if (targetGpa > maxPossibleGpa) {
     return {
       a: remainingCredits,
       b: 0,
       c: 0,
       d: 0,
-      finalGPA: parseFloat(maxPossibleGPA.toFixed(2)),
+      finalGpa: parseFloat(maxPossibleGpa.toFixed(2)),
     };
   }
 
-  if (targetGPA <= minPossibleGPA) {
+  if (targetGpa <= minPossibleGpa) {
     return {
       a: 0,
       b: 0,
       c: 0,
       d: remainingCredits,
-      finalGPA: parseFloat(minPossibleGPA.toFixed(2)),
+      finalGpa: parseFloat(minPossibleGpa.toFixed(2)),
     };
   }
 
-  const minRequiredNewPoints = targetGPA * requiredCredits - currentQualityPoints;
+  const minRequiredNewPoints = targetGpa * requiredCredits - currentQualityPoints;
 
   const targetPointOffset = minRequiredNewPoints - remainingCredits * 1.0;
 
@@ -51,9 +51,9 @@ export const calculateRequiredGrades = (
         const d = remainingCredits - a - b - c;
 
         const newQualityPoints = a * 4.0 + b * 3.0 + c * 2.0 + d * 1.0;
-        const finalGPA = (currentQualityPoints + newQualityPoints) / requiredCredits;
+        const finalGpa = (currentQualityPoints + newQualityPoints) / requiredCredits;
 
-        return { a, b, c, d, finalGPA: parseFloat(finalGPA.toFixed(2)) };
+        return { a, b, c, d, finalGpa: parseFloat(finalGpa.toFixed(2)) };
       }
     }
   }
@@ -63,7 +63,7 @@ export const calculateRequiredGrades = (
     b: 0,
     c: 0,
     d: 0,
-    finalGPA: parseFloat(maxPossibleGPA.toFixed(2)),
+    finalGpa: parseFloat(maxPossibleGpa.toFixed(2)),
   };
 };
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useScheduleStore } from "@/components/store/useScheduleStore";
+import { useScheduleStore } from "@/store/useScheduleStore";
 import { Plus, X } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { toast } from "sonner";

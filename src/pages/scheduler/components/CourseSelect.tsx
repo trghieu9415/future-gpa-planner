@@ -6,7 +6,7 @@ import { ChevronDown, RotateCcw } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";
 import { Checkbox } from "../../../components/ui/checkbox";
-import { useScheduleStore } from "@/components/store/useScheduleStore";
+import { useScheduleStore } from "@/store/useScheduleStore";
 import { toast } from "sonner";
 import React from "react";
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
@@ -45,8 +45,8 @@ export const CourseSelect = () => {
         const searchKey = removeVietnameseTones(conditions.teacher);
 
         const hasTeacher = course.groups.some((group) =>
-          group.schedule.some((sched) => {
-            const teacherName = sched.teacher;
+          group.schedule.some((schedule) => {
+            const teacherName = schedule.teacher;
             const normalizedName = removeVietnameseTones(teacherName);
             const acronym = getAcronym(teacherName);
             return normalizedName.includes(searchKey) || acronym.includes(searchKey);

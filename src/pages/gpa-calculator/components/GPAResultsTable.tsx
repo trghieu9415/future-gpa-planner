@@ -3,51 +3,88 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Award, Medal, BadgeCheck, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { Input } from "../../../components/ui/input";
-import { calculateRequiredGrades } from "@/utils/u-math";
-
-interface GPAResultsTableProps {
-  currentGPA: number | null;
-  accumulatedCredits: number | null;
-  requiredCredits: number | null;
-}
+import { Input } from "@/components/ui/input";
+import { useAcademicStatus } from "@/store/useAcademicStatus";
+import { useDeferredValue, useMemo, useState } from "react";
+import { rmtx } from "@/consts/CustomCss";
+import { getGpaStrategy } from "@/pages/gpa-calculator/math/getGpaStrategy";
+import { GradingSystemSelector } from "./GradingSystemSelector";
 
 const gradeTargets = [
-  { tier: "Xuất sắc", minGPA: 3.6, icon: Medal, color: "text-yellow-500" },
-  { tier: "Giỏi", minGPA: 3.2, icon: Award, color: "text-emerald-500" },
-  { tier: "Khá", minGPA: 2.5, icon: BadgeCheck, color: "text-blue-500" },
+  { tier: "Xuất sắc", minGpa: 3.6, icon: Medal, color: "text-yellow-500" },
+  { tier: "Giỏi", minGpa: 3.2, icon: Award, color: "text-emerald-500" },
+  { tier: "Khá", minGpa: 2.5, icon: BadgeCheck, color: "text-blue-500" },
 ];
 
-export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredits }: GPAResultsTableProps) => {
-  const [customTargetGPA, setCustomTargetGPA] = useState<number | null>(null);
-  const remainingCredits = requiredCredits && accumulatedCredits ? requiredCredits - accumulatedCredits : null;
+export const GpaResultsTable = () => {
+  const { currentGpa, accumulatedCredits, requiredCredits, gradingSystem } = useAcademicStatus();
 
-  if (!currentGPA || !accumulatedCredits || !requiredCredits || !remainingCredits || remainingCredits <= 0) {
+  const grades = gradingSystem ? gradingSystem.grades : [];
+
+  const [customTargetGpa, setCustomTargetGpa] = useState<number | null>(4);
+  const deferredCustomGpa = useDeferredValue(customTargetGpa);
+
+  const baseStrategies = useMemo(() => {
+    if (!currentGpa || !accumulatedCredits || !requiredCredits || !gradingSystem) return [];
+
+    return gradeTargets.map((target) => ({
+      ...target,
+      strategy: getGpaStrategy({
+        currentGpa,
+        accumulatedCredits,
+        requiredCredits,
+        targetGpa: target.minGpa,
+        gradingSystem,
+      }),
+    }));
+  }, [currentGpa, accumulatedCredits, requiredCredits, gradingSystem]);
+
+  const customStrategy = useMemo(() => {
+    if (!currentGpa || !accumulatedCredits || !requiredCredits || !gradingSystem || !deferredCustomGpa) return null;
+
+    return {
+      tier: "Tùy chỉnh",
+      minGpa: deferredCustomGpa,
+      icon: Target,
+      color: "text-gray-500",
+      strategy: getGpaStrategy({
+        currentGpa,
+        accumulatedCredits,
+        requiredCredits,
+        targetGpa: deferredCustomGpa,
+        gradingSystem,
+      }),
+    };
+  }, [currentGpa, accumulatedCredits, requiredCredits, gradingSystem, deferredCustomGpa]);
+
+  const strategies = customStrategy ? [...baseStrategies, customStrategy] : baseStrategies;
+
+  if (!currentGpa || !accumulatedCredits || !requiredCredits || !gradingSystem) {
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">Yêu cầu về điểm</CardTitle>
-          <CardDescription>
-            Nhập dữ liệu học tập của bạn để xem cần đạt những điểm số nào cho từng mục tiêu GPA khác nhau.
-          </CardDescription>
+          <CardDescription>Nhập dữ liệu học tập và hệ điểm của bạn để xem kịch bản tối ưu.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted-foreground">
             <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Điền đầy đủ thông tin bên trên để xem bạn cần đạt những điểm số nào.</p>
+            <p>Vui lòng điền đầy đủ thông tin bên trên để tính toán.</p>
           </div>
         </CardContent>
       </Card>
     );
   }
 
-  const customRequirements =
-    customTargetGPA && customTargetGPA > 0 && customTargetGPA <= 4
-      ? calculateRequiredGrades(currentGPA, accumulatedCredits, requiredCredits, customTargetGPA)
-      : null;
-
-  const isCustomAchievable = customRequirements ? customRequirements.finalGPA >= customTargetGPA : false;
+  const getStatusBadge = (isPossible: boolean, targetGpa: number) => {
+    if (!isPossible) {
+      return { label: "Phải cải thiện", color: "bg-red-500 hover:bg-red-600 text-white" };
+    }
+    if (currentGpa >= targetGpa) {
+      return { label: "Cần duy trì", color: "bg-green-600 hover:bg-green-700 text-white" };
+    }
+    return { label: "Có thể đạt", color: "bg-yellow-400 hover:bg-yellow-500 text-black" };
+  };
 
   return (
     <Card>
@@ -56,159 +93,107 @@ export const GPAResultsTable = ({ currentGPA, accumulatedCredits, requiredCredit
           Yêu cầu điểm số để đạt các mục tiêu tốt nghiệp
         </CardTitle>
         <CardDescription>
-          Dựa trên {accumulatedCredits} tín chỉ đã hoàn thành với GPA hiện tại là {currentGPA.toFixed(2)}. Hiển thị yêu
-          cầu điểm số cho {remainingCredits} tín chỉ còn lại.
+          Dựa trên {accumulatedCredits} tín chỉ đã hoàn thành với GPA hiện tại là {currentGpa.toFixed(2)}. Bảng dưới đây
+          tính toán cho {requiredCredits - accumulatedCredits} tín chỉ còn lại.
         </CardDescription>
       </CardHeader>
       <CardContent>
+        <GradingSystemSelector />
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead rowSpan={2} className="text-center min-w-30">
-                  Xếp loại tốt nghiệp
+                  Xếp loại
                 </TableHead>
                 <TableHead rowSpan={2} className="text-center">
                   GPA mục tiêu
                 </TableHead>
-                <TableHead colSpan={4} className="text-center">
-                  Số tín chỉ
+                {/* colSpan tự động co giãn theo số lượng điểm của hệ thống */}
+                <TableHead colSpan={grades.length} className="text-center border-b">
+                  Tổ hợp số tín chỉ đề xuất
                 </TableHead>
                 <TableHead rowSpan={2} className="text-center">
-                  GPA tốt nghiệp
+                  GPA cuối cùng
                 </TableHead>
                 <TableHead rowSpan={2} className="text-center min-w-40">
                   Trạng thái
                 </TableHead>
               </TableRow>
               <TableRow>
-                <TableHead className="text-center">A</TableHead>
-                <TableHead className="text-center">B</TableHead>
-                <TableHead className="text-center">C</TableHead>
-                <TableHead className="text-center">D</TableHead>
+                {/* Render số lượng cột tự động dựa trên gradingSystem */}
+                {grades.map((grade) => (
+                  <TableHead key={grade.letter} className="text-center font-bold text-primary">
+                    {grade.letter}
+                  </TableHead>
+                ))}
               </TableRow>
             </TableHeader>
             <TableBody>
-              {gradeTargets.map((target) => {
-                const requirements = calculateRequiredGrades(
-                  currentGPA,
-                  accumulatedCredits,
-                  requiredCredits,
-                  target.minGPA
-                );
-
-                const isAchieved = currentGPA >= target.minGPA;
-                const isAchievable = requirements.finalGPA >= target.minGPA;
-
-                const IconComponent = target.icon;
-                const styleComponent = target.color;
+              {strategies.map((target) => {
+                const badgeInfo = getStatusBadge(target.strategy.isPossible, target.minGpa);
 
                 return (
                   <TableRow key={target.tier}>
                     <TableCell>
-                      <div className="flex items-center justify-center gap-2">
-                        <IconComponent className={cn("h-4 w-4 hidden md:flex", styleComponent)} />
-                        <span className="font-bold text-center">{target.tier}</span>
+                      <div className="flex items-center justify-start md:justify-center gap-2">
+                        <target.icon className={cn("h-4 w-4 hidden md:flex", target.color)} />
+                        <span className="font-bold whitespace-nowrap">{target.tier}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center justify-center">
-                        <Badge variant="outline" className="font-mono ">
-                          {target.minGPA.toFixed(1)}+
-                        </Badge>
-                      </div>
+                      {target.tier !== "Tùy chỉnh" ? (
+                        <div className="flex items-center justify-center">
+                          <Badge variant="outline" className="font-mono text-base">
+                            {target.minGpa.toFixed(1)}+
+                          </Badge>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center">
+                          <Input
+                            type="number"
+                            placeholder="3.85"
+                            min="2"
+                            max="4.0"
+                            step="0.01"
+                            className={cn("w-20 h-8 text-center font-mono font-bold", rmtx)}
+                            value={customTargetGpa ?? ""}
+                            onFocus={(e) => e.target.select()}
+                            onBlur={() => {
+                              if (customTargetGpa && customTargetGpa > 4) setCustomTargetGpa(4.0);
+                              else if (customTargetGpa && customTargetGpa < 2) setCustomTargetGpa(2.0);
+                            }}
+                            onChange={(e) => {
+                              const parsed = parseFloat(e.target.value);
+                              setCustomTargetGpa(isNaN(parsed) ? null : parsed);
+                            }}
+                          />
+                        </div>
+                      )}
                     </TableCell>
-                    <TableCell className="text-center font-mono">{requirements.a}</TableCell>
-                    <TableCell className="text-center font-mono">{requirements.b}</TableCell>
-                    <TableCell className="text-center font-mono">{requirements.c}</TableCell>
-                    <TableCell className="text-center font-mono">{requirements.d}</TableCell>
-                    <TableCell className="text-center font-mono">{requirements.finalGPA.toFixed(2)}</TableCell>
+
+                    {/* Render chính xác số tín chỉ tương ứng với từng cột điểm */}
+                    {target.strategy.combinations.map((combination) => (
+                      <TableCell key={combination.gradeLetter} className="text-center font-medium">
+                        {combination.credits > 0 ? combination.credits : "-"}
+                      </TableCell>
+                    ))}
+
+                    <TableCell className="text-center font-mono font-bold">
+                      {target.strategy.finalGpa.toFixed(2)}
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-center">
-                        <Badge
-                          className={cn(
-                            "cursor-default",
-                            isAchieved
-                              ? "bg-green-600 hover:bg-green-700 text-white"
-                              : isAchievable
-                                ? "bg-yellow-400 hover:bg-yellow-500 text-black"
-                                : "bg-slate-200 hover:bg-slate-300 text-gray-600"
-                          )}
-                        >
-                          {isAchieved ? "Cần duy trì" : isAchievable ? "Có thể đạt" : "Phải cải thiện"}
+                        <Badge className={cn("cursor-default whitespace-nowrap", badgeInfo.color)}>
+                          {badgeInfo.label}
                         </Badge>
                       </div>
                     </TableCell>
                   </TableRow>
                 );
               })}
-              {/* Custom GPA Row */}
-              <TableRow>
-                <TableCell>
-                  <div className="flex items-center justify-center gap-2">
-                    <Target className={cn("h-4 w-4 hidden md:flex", "text-gray-500")} />
-                    <span className="font-bold text-center">Tùy chỉnh</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center justify-center">
-                    <Input
-                      type="number"
-                      placeholder="3.85"
-                      min="0"
-                      max="4.0"
-                      step="0.01"
-                      className="h-8 w-16 text-center font-mono 
-												appearance-none	[-moz-appearance:textfield]
-												[&::-webkit-inner-spin-button]:appearance-none
-												[&::-webkit-outer-spin-button]:appearance-none"
-                      value={customTargetGPA ?? ""}
-                      onFocus={(event) => event.target.select()}
-                      onChange={(e) => {
-                        const parsed = parseFloat(e.target.value);
-                        setCustomTargetGPA(isNaN(parsed) ? null : parsed);
-                      }}
-                    />
-                  </div>
-                </TableCell>
-                <TableCell className="text-center font-mono">{customRequirements?.a ?? "-"}</TableCell>
-                <TableCell className="text-center font-mono">{customRequirements?.b ?? "-"}</TableCell>
-                <TableCell className="text-center font-mono">{customRequirements?.c ?? "-"}</TableCell>
-                <TableCell className="text-center font-mono">{customRequirements?.d ?? "-"}</TableCell>
-                <TableCell className="text-center font-mono">
-                  {customRequirements ? customRequirements.finalGPA.toFixed(2) : "-"}
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center justify-center">
-                    {customRequirements && (
-                      <Badge
-                        className={cn(
-                          "cursor-default",
-                          isCustomAchievable
-                            ? "bg-yellow-400 hover:bg-yellow-500 text-black"
-                            : "bg-slate-200 hover:bg-slate-300 text-gray-600"
-                        )}
-                      >
-                        {isCustomAchievable ? "Có thể đạt" : "Phải cải thiện"}
-                      </Badge>
-                    )}
-                  </div>
-                </TableCell>
-              </TableRow>
             </TableBody>
           </Table>
-        </div>
-
-        <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-          <p className="text-sm text-muted-foreground mb-2">
-            <strong>Lưu ý:</strong>
-            <br />- Các phép tính này giả định rằng bạn sẽ hoàn thành chính xác {remainingCredits} tín chỉ còn lại và
-            các học phần đều được tính vào tích lũy.
-            <br />- Tiêu chí chọn tổ hợp điểm là ưu tiên cách dùng <strong>ít tín chỉ điểm A nhất</strong>.
-            <br />- Thuật toán sẽ ưu tiên dùng các tín chỉ điểm D, C và B trước, chỉ dùng đến điểm A khi cần để đạt mục
-            tiêu.
-            <br />- Các tổ hợp điểm chỉ là một trong nhiều cách có thể để đạt được từng mức GPA mục tiêu.
-          </p>
         </div>
       </CardContent>
     </Card>

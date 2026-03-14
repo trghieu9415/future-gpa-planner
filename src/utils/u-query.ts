@@ -1,9 +1,20 @@
 export function parseSearchQuery(query: string) {
   const lowerQuery = query.toLowerCase();
 
-  const creditsMatch = lowerQuery.match(/tc\[(\d+)\]/);
-  const facultyMatch = lowerQuery.match(/khoa\[(.*?)\]/);
-  const teacherMatch = lowerQuery.match(/gv\[(.*?)\]/);
+  const tcRegex = /tc\s*:\s*(\d+)/i;
+  const khoaRegex = /khoa\s*:\s*(.*?)(?=\s+(?:gv|tc)\s*:|$)/i;
+  const gvRegex = /gv\s*:\s*(.*?)(?=\s+(?:khoa|tc)\s*:|$)/i;
+
+  const creditsMatch = query.match(tcRegex);
+  const facultyMatch = query.match(khoaRegex);
+  const teacherMatch = query.match(gvRegex);
+
+  if (facultyMatch) {
+    facultyMatch[1] = facultyMatch[1].trim();
+  }
+  if (teacherMatch) {
+    teacherMatch[1] = teacherMatch[1].trim();
+  }
 
   let cleanText = lowerQuery;
   if (creditsMatch) cleanText = cleanText.replace(creditsMatch[0], "");
