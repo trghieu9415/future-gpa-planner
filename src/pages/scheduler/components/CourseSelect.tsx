@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChevronDown, RotateCcw } from "lucide-react";
@@ -20,9 +20,17 @@ export const CourseSelect = () => {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+
   const courses = useMemo(() => {
     return data?.courses || [];
   }, [data]);
+
+  useEffect(() => {
+    if (data?.lastUpdated) {
+      setLastUpdated(data.lastUpdated);
+    }
+  }, [data?.lastUpdated]);
 
   const filteredCourses = useMemo(() => {
     return courseFilter(courses, inputValue);
@@ -231,8 +239,8 @@ export const CourseSelect = () => {
           </Table>
         </div>
       </div>
-      <div className="text-xs text-gray-600 italic">
-        Cập nhật lần cuối: {new Date(data.lastUpdated).toLocaleString()}
+      <div className="text-xs text-gray-500 italic">
+        Cập nhật lần cuối: {lastUpdated ? new Date(lastUpdated).toLocaleString() : "Chưa cập nhật"}
       </div>
     </div>
   );
