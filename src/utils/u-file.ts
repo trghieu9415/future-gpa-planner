@@ -1,4 +1,4 @@
-import { Schedule } from "@/types/schedule";
+import { Schedule } from "@/pages/scheduler/types/schedule";
 import { toBlob, toPng } from "html-to-image";
 
 export const downloadElementScreenshot = async (element: HTMLDivElement, fileName: string) => {

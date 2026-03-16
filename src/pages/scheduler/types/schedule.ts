@@ -1,28 +1,6 @@
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
-
-export interface OpenCourse {
-  courseId: string;
-  name: string;
-  credits: number;
-  faculty: string[];
-  groups: CourseGroup[];
-}
-
-export interface CourseGroup {
-  groupId: string;
-  classSize: number;
-  schedule: GroupSchedule[];
-}
-
-export interface GroupSchedule {
-  teacher: string;
-  dayOfWeek: number;
-  startPeriod: number;
-  periodCount: number;
-  room: string;
-  studyWeeks: number[];
-}
+import { GroupSchedule, OpenCourse } from "./course";
 
 export interface SignedCourse {
   courseId: string;

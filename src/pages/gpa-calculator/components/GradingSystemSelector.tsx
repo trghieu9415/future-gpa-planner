@@ -59,27 +59,27 @@ export const GradingSystemSelector = () => {
   };
 
   return (
-    <div className="">
+    <div>
       <RadioGroup
         value={selectedType}
         onValueChange={(val) => saveType(val as SystemType)}
-        className="flex space-x-3 items-center"
+        className="flex flex-col sm:flex-row  mb-3"
       >
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 h-8">
           <RadioGroupItem value="letter" id="r-letter" />
           <Label htmlFor="r-letter" className="cursor-pointer">
             K24 và các khóa trước
           </Label>
         </div>
 
-        <div className="flex items-center space-x-2 h-12">
+        <div className="flex items-center space-x-2 h-8">
           <RadioGroupItem value="plus" id="r-plus" />
           <Label htmlFor="r-plus" className="cursor-pointer">
             K25+
           </Label>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 h-8">
           <RadioGroupItem value="custom" id="r-custom" />
           <Label htmlFor="r-custom" className="cursor-pointer">
             Tùy Chỉnh

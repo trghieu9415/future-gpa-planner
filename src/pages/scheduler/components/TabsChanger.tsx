@@ -13,7 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Schedule } from "@/types/schedule";
+import { Schedule } from "@/pages/scheduler/types/schedule";
 
 export const TabsChanger = () => {
   const { schedules, getActivatedSchedule, addSchedule, removeSchedule, setActivatedSchedule } = useScheduleStore();

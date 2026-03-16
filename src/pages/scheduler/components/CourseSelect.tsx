@@ -1,103 +1,50 @@
-import { OpenCourse } from "@/types/schedule";
-import { useEffect, useMemo, useState } from "react";
-import { Label } from "../../../components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "../../../components/ui/popover";
+import { useMemo, useState } from "react";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChevronDown, RotateCcw } from "lucide-react";
-import { Button } from "../../../components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";
-import { Checkbox } from "../../../components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useScheduleStore } from "@/store/useScheduleStore";
 import { toast } from "sonner";
 import React from "react";
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { getOpenCourseList } from "@/utils/u-fetch";
-import { getAcronym, parseSearchQuery, removeVietnameseTones } from "@/utils/u-query";
+import { courseFilter } from "@/utils/u-query";
+import { OpenCourse } from "../types/course";
+import { useCourseStore } from "@/store/useCourseStore";
 
 export const CourseSelect = () => {
-  const [courses, setCourses] = useState<OpenCourse[]>([]);
+  const { data } = useCourseStore();
+
   const [selectedOpenCourse, setSelectedOpenCourse] = useState<OpenCourse | null>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
 
+  const courses = useMemo(() => {
+    return data?.courses || [];
+  }, [data]);
+
   const filteredCourses = useMemo(() => {
-    if (!inputValue || inputValue.trim() === "") return courses;
-
-    const conditions = parseSearchQuery(inputValue);
-
-    return courses.filter((course) => {
-      if (conditions.credits !== null && course.credits !== conditions.credits) {
-        return false;
-      }
-
-      if (conditions.faculty) {
-        const searchKey = removeVietnameseTones(conditions.faculty);
-
-        const match = course.faculty.some((f) => {
-          const facultyNameValues = removeVietnameseTones(f);
-          const facultyAcronym = getAcronym(f);
-
-          return facultyNameValues.includes(searchKey) || facultyAcronym === searchKey;
-        });
-
-        if (!match) return false;
-      }
-      if (conditions.teacher) {
-        const searchKey = removeVietnameseTones(conditions.teacher);
-
-        const hasTeacher = course.groups.some((group) =>
-          group.schedule.some((schedule) => {
-            const teacherName = schedule.teacher;
-            const normalizedName = removeVietnameseTones(teacherName);
-            const acronym = getAcronym(teacherName);
-            return normalizedName.includes(searchKey) || acronym.includes(searchKey);
-          })
-        );
-
-        if (!hasTeacher) return false;
-      }
-
-      if (conditions.text) {
-        const matchId = course.courseId.toLowerCase().includes(conditions.text);
-        const matchName = course.name.toLowerCase().includes(conditions.text);
-        if (!matchId && !matchName) return false;
-      }
-
-      return true;
-    });
+    return courseFilter(courses, inputValue);
   }, [inputValue, courses]);
 
   const { getActivatedSchedule, toggleSign } = useScheduleStore();
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const list = await getOpenCourseList();
-        setCourses(list);
-      } catch (error) {
-        console.error("Failed to fetch courses:", error);
-      }
-    };
-
-    fetchCourses();
-  }, []);
-
   const handleCourseSelect = (checked: boolean, course: OpenCourse, groupId: string) => {
-    // <-- SỬA 2: THÊM KIỂM TRA SCHEDULE
     const schedule = getActivatedSchedule();
     if (!schedule) {
       toast.error("Chưa có thời khóa biểu nào được kích hoạt. Vui lòng tạo TKB mới.");
-      return; // Dừng hàm
+      return;
     }
-    // KẾT THÚC SỬA 2
 
     if (checked) {
       try {
-        schedule.addCourse(course, groupId); // Dùng 'schedule'
+        schedule.addCourse(course, groupId);
       } catch (error) {
         toast.error((error as Error).message);
       }
     } else {
-      schedule.removeCourse(course.courseId); // Dùng 'schedule'
+      schedule.removeCourse(course.courseId);
     }
     toggleSign();
   };

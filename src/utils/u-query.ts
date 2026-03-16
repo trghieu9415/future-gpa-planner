@@ -1,4 +1,6 @@
-export function parseSearchQuery(query: string) {
+import { OpenCourse } from "@/pages/scheduler/types/course";
+
+export function parseSearchQuery(query: string): QueryConditions {
   const lowerQuery = query.toLowerCase();
 
   const tcRegex = /tc\s*:\s*(\d+)/i;
@@ -45,3 +47,57 @@ export function getAcronym(str: string) {
     .map((word) => word[0])
     .join("");
 }
+
+export interface QueryConditions {
+  credits: number;
+  faculty: string;
+  teacher: string;
+  text: string;
+}
+
+export const courseFilter = (courses: OpenCourse[], inputQuery: string): OpenCourse[] => {
+  if (!inputQuery || inputQuery.trim() === "") return courses;
+
+  const conditions = parseSearchQuery(inputQuery);
+
+  return courses.filter((course) => {
+    if (conditions.credits !== null && course.credits !== conditions.credits) {
+      return false;
+    }
+
+    if (conditions.faculty) {
+      const searchKey = removeVietnameseTones(conditions.faculty);
+
+      const match = course.faculty.some((f) => {
+        const facultyNameValues = removeVietnameseTones(f);
+        const facultyAcronym = getAcronym(f);
+
+        return facultyNameValues.includes(searchKey) || facultyAcronym === searchKey;
+      });
+
+      if (!match) return false;
+    }
+    if (conditions.teacher) {
+      const searchKey = removeVietnameseTones(conditions.teacher);
+
+      const hasTeacher = course.groups.some((group) =>
+        group.schedule.some((schedule) => {
+          const teacherName = schedule.teacher;
+          const normalizedName = removeVietnameseTones(teacherName);
+          const acronym = getAcronym(teacherName);
+          return normalizedName.includes(searchKey) || acronym.includes(searchKey);
+        })
+      );
+
+      if (!hasTeacher) return false;
+    }
+
+    if (conditions.text) {
+      const matchId = course.courseId.toLowerCase().includes(conditions.text);
+      const matchName = course.name.toLowerCase().includes(conditions.text);
+      if (!matchId && !matchName) return false;
+    }
+
+    return true;
+  });
+};

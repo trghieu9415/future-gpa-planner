@@ -1,4 +1,4 @@
-import { SignedCourse } from "@/types/schedule";
+import { SignedCourse } from "@/pages/scheduler/types/schedule";
 import { Card } from "../../../components/ui/card";
 import { cn } from "@/lib/utils";
 import { Button } from "../../../components/ui/button";

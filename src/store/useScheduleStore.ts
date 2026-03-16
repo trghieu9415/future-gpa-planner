@@ -1,22 +1,44 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
-import { Schedule } from "@/types/schedule";
+import { persist, createJSONStorage, PersistOptions } from "zustand/middleware";
+import { Schedule } from "@/pages/scheduler/types/schedule";
+
+interface ScheduleStore {
+  schedules: Schedule[];
+  activatedScheduleId?: string;
+  sign: boolean;
+  week: number;
+  addSchedule: (scheduleName: string, schedule?: Schedule) => void;
+  removeSchedule: (scheduleId: string) => void;
+  setActivatedSchedule: (scheduleId: string) => void;
+  getActivatedSchedule: () => Schedule | undefined;
+  toggleSign: () => void;
+  setWeek: (week: number) => void;
+}
+
+const persistedScheduleStore: PersistOptions<ScheduleStore> = {
+  name: "schedule-storage",
+  storage: createJSONStorage(() => localStorage, {
+    reviver: (key, value) => {
+      if (key === "schedules" && Array.isArray(value)) {
+        return value.map((s) => {
+          const schedule = new Schedule(s.name);
+          schedule.id = s.id;
+          schedule.signedCourses = s.signedCourses;
+          return schedule;
+        });
+      }
+      return value;
+    },
+  }),
+};
 
 export const useScheduleStore = create(
-  persist<{
-    schedules: Schedule[];
-    activatedScheduleId?: string;
-    sign: boolean;
-    addSchedule: (scheduleName: string, schedule?: Schedule) => void;
-    removeSchedule: (scheduleId: string) => void;
-    setActivatedSchedule: (scheduleId: string) => void;
-    getActivatedSchedule: () => Schedule | undefined;
-    toggleSign: () => void;
-  }>(
+  persist<ScheduleStore>(
     (set, get) => ({
       schedules: [],
       activatedScheduleId: undefined,
       sign: false,
+      week: 1,
       addSchedule: (scheduleName, schedule) => {
         let newSchedule = new Schedule(scheduleName);
         if (schedule) {
@@ -48,25 +70,10 @@ export const useScheduleStore = create(
         }),
 
       setActivatedSchedule: (scheduleId) => set({ activatedScheduleId: scheduleId, sign: !get().sign }),
-
       getActivatedSchedule: () => get().schedules.find((s) => s.id === get().activatedScheduleId),
       toggleSign: () => set((state) => ({ sign: !state.sign })),
+      setWeek: (week) => set({ week }),
     }),
-    {
-      name: "schedule-storage",
-      storage: createJSONStorage(() => localStorage, {
-        reviver: (key, value) => {
-          if (key === "schedules" && Array.isArray(value)) {
-            return value.map((s) => {
-              const schedule = new Schedule(s.name);
-              schedule.id = s.id;
-              schedule.signedCourses = s.signedCourses;
-              return schedule;
-            });
-          }
-          return value;
-        },
-      }),
-    }
+    persistedScheduleStore
   )
 );

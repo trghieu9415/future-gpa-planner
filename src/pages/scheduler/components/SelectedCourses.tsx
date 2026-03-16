@@ -1,5 +1,5 @@
 import { useScheduleStore } from "@/store/useScheduleStore";
-import { SignedCourses } from "@/types/schedule";
+import { SignedCourses } from "@/pages/scheduler/types/schedule";
 import { useEffect, useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../components/ui/table";
 import { Label } from "../../../components/ui/label";

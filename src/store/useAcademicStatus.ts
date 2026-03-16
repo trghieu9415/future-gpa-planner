@@ -2,7 +2,7 @@ import { LetterSystem } from "@/consts/GradingScale";
 import { GradingSystem } from "@/pages/gpa-calculator/types/grade";
 import { create } from "zustand";
 
-export const useAcademicStatus = create<{
+interface AcademicStatus {
   currentGpa: number | null;
   accumulatedCredits: number | null;
   requiredCredits: number | null;
@@ -11,7 +11,9 @@ export const useAcademicStatus = create<{
   setAccumulatedCredits: (value: number | null) => void;
   setRequiredCredits: (value: number | null) => void;
   setGradingSystem: (value: GradingSystem) => void;
-}>((set) => ({
+}
+
+export const useAcademicStatus = create<AcademicStatus>((set) => ({
   currentGpa: null,
   accumulatedCredits: null,
   requiredCredits: null,
