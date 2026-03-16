@@ -231,6 +231,9 @@ export const CourseSelect = () => {
           </Table>
         </div>
       </div>
+      <div className="text-xs text-gray-600 italic">
+        Cập nhật lần cuối: {new Date(data.lastUpdated).toLocaleString()}
+      </div>
     </div>
   );
 };

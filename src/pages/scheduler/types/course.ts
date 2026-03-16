@@ -2,6 +2,7 @@ export interface OpenCourseData {
   startDate: string;
   defaultDisplayWeek: number;
   courses: OpenCourse[];
+  lastUpdated: string;
 }
 
 export interface OpenCourse {
