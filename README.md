@@ -41,7 +41,6 @@ Dự án được xây dựng dựa trên các công nghệ hiện đại:
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/)
 - **UI Components:** [shadcn/ui](https://ui.shadcn.com/) (Radix UI)
 - **State Management:** [Zustand](https://zustand-demo.pmnd.rs/)
-- **Data Fetching:** [TanStack Query (React Query)](https://tanstack.com/query/v5)
 - **Icons:** [Lucide React](https://lucide.dev/)
 - **Tiện ích khác:** `html-to-image` (chụp ảnh TKB), `sonner` (Toast notifications), `react-router-dom`.
 
