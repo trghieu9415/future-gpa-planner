@@ -109,7 +109,6 @@ export const GpaResultsTable = () => {
                 <TableHead rowSpan={2} className="text-center">
                   GPA mục tiêu
                 </TableHead>
-                {/* colSpan tự động co giãn theo số lượng điểm của hệ thống */}
                 <TableHead colSpan={grades.length} className="text-center border-b">
                   Tổ hợp số tín chỉ
                 </TableHead>

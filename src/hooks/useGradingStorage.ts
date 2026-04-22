@@ -16,6 +16,12 @@ export function useGradingStorage() {
     if (savedCustom) setCustomSystem(JSON.parse(savedCustom));
   }, []);
 
+  useEffect(() => {
+    if (selectedType === "custom") {
+      setGradingSystem(customSystem);
+    }
+  }, [customSystem, selectedType, setGradingSystem]);
+
   const saveType = (type: SystemType) => {
     setSelectedType(type);
     if (type === "letter") {

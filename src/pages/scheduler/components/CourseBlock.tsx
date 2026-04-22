@@ -1,7 +1,7 @@
 import { SignedCourse } from "@/pages/scheduler/types/schedule";
-import { Card } from "../../../components/ui/card";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { Button } from "../../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useRef, useState } from "react";
 import {
   Dialog,
@@ -10,11 +10,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../../../components/ui/dialog";
-import { Input } from "../../../components/ui/input";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { useScheduleStore } from "@/store/useScheduleStore";
 import { BookText, Hash, MapPin, Palette, User, Users } from "lucide-react";
-import { Label } from "../../../components/ui/label";
+import { Label } from "@/components/ui/label";
 
 interface CourseBlockProps {
   courseId: string;

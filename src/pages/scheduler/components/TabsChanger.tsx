@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useScheduleStore } from "@/store/useScheduleStore";
 import { Plus, X } from "lucide-react";
-import { Button } from "../../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
   AlertDialog,
