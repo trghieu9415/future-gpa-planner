@@ -1,6 +1,6 @@
 import { useAcademicStatus } from "@/store/useAcademicStatus";
 import { CustomCreditPlanner } from "@/pages/gpa-calculator/components/CustomCreditPlanner";
-import { GpaResultsTable } from "./components/Gpa_ResultsTable";
+import { GpaResultsTable } from "./components/GpaResultsTable";
 import { GpaInput } from "./components/GpaInputs";
 
 export const GpaCalculator = () => {

@@ -3,7 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Layout } from "@/components/layouts/Layout";
 import { Scheduler } from "@/pages/scheduler/Scheduler";
-import { GpaCalculator } from "@/pages/gpa-calculator/Gpa_Calculator";
+import { GpaCalculator } from "@/pages/gpa-calculator/GpaCalculator";
 
 const App = () => (
   <TooltipProvider>
