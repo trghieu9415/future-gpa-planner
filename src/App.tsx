@@ -16,7 +16,7 @@ const App = () => (
           <Route path="scheduler" element={<Scheduler />} />
         </Route>
 
-        <Route path="*" element={<Navigate to={"/scheduler"} />} />
+        <Route path="*" element={<Navigate to={"/calculator"} />} />
       </Routes>
     </BrowserRouter>
   </TooltipProvider>
